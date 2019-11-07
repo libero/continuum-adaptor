@@ -19,7 +19,7 @@ const init = async (): Promise<void> => {
     logger.info('started event bus');
 
     // Setup routes
-    app.use('/', (req: Request, res: Response, next) => {
+    app.use('/', (req: Request, _res: Response, next) => {
         // Maybe this should be trace level logging
         logger.info(`${req.method} ${req.path}`, {});
         next();

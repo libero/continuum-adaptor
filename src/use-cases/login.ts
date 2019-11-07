@@ -8,7 +8,7 @@ const {
     auth: { login_redirect_url },
 } = config;
 
-export const Login = (req: Request, res: Response): void => {
+export const Login = (_req: Request, res: Response): void => {
     logger.info('loginRedirect', { login_redirect_url });
 
     res.redirect(login_redirect_url);

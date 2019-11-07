@@ -4,7 +4,7 @@ import { DomainLogger as logger } from '../logger';
 export * from './authenticate';
 export * from './login';
 
-export const HealthCheck = () => (req: Request, res: Response): void => {
+export const HealthCheck = () => (_req: Request, res: Response): void => {
     logger.info('healthCheck');
     res.json({ ok: true });
 };
