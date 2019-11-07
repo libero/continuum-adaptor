@@ -14,9 +14,9 @@
         "url": "https://github.com/libero/continuum-auth"
     },
     "husky": {
-      "hooks": {
-        "pre-commit": "yarn lint"
-      }
+        "hooks": {
+            "pre-commit": "yarn lint"
+        }
     },
     "author": "libero-npm@elifesciences.org",
     "license": "MIT",
@@ -35,9 +35,7 @@
         "funfix": "^7.0.1",
         "jsonwebtoken": "^8.5.1",
         "node-fetch": "^2.6.0",
-        "nodemon": "^1.19.1",
         "pino": "^5.13.2",
-        "typescript": "^3.5.3",
         "uuid": "^3.3.3"
     },
     "devDependencies": {
@@ -49,9 +47,11 @@
         "flush-promises": "^1.0.2",
         "husky": "^3.0.9",
         "jest": "^24.9.0",
+        "nodemon": "^1.19.4",
         "pino-pretty": "^3.2.1",
         "prettier": "^1.18.2",
         "ts-jest": "^24.1.0",
-        "ts-node": "^8.3.0"
+        "ts-node": "^8.3.0",
+        "typescript": "^3.7.2"
     }
 }
