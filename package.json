@@ -1,20 +1,19 @@
 {
-    "name": "continuum-auth",
-    "version": "1.0.0",
+    "name": "@libero/continuum-auth",
+    "version": "0.1.0",
     "description": "",
     "main": "dist/index.js",
     "scripts": {
         "test": "jest",
-        "build": "tsc --build tsconfig.json",
+        "build": "tsc",
         "lint": "eslint --ext .js,.ts,.tsx .",
-        "start:dev": "dotenv -e ../.env -- nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts",
         "update:internal": "yarn upgrade -P @libero"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/libero/reviewer"
+        "url": "https://github.com/libero/continuum-auth"
     },
-    "author": "",
+    "author": "libero-npm@elifesciences.org",
     "license": "MIT",
     "dependencies": {
         "@libero/auth-utils": "^0.1.0",
