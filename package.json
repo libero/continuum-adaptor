@@ -13,6 +13,11 @@
         "type": "git",
         "url": "https://github.com/libero/continuum-auth"
     },
+    "husky": {
+      "hooks": {
+        "pre-commit": "yarn lint"
+      }
+    },
     "author": "libero-npm@elifesciences.org",
     "license": "MIT",
     "dependencies": {
@@ -42,6 +47,7 @@
         "eslint-config-prettier": "^6.5.0",
         "eslint-plugin-prettier": "^3.1.1",
         "flush-promises": "^1.0.2",
+        "husky": "^3.0.9",
         "jest": "^24.9.0",
         "pino-pretty": "^3.2.1",
         "prettier": "^1.18.2",
