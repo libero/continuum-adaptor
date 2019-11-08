@@ -17,9 +17,9 @@ jobs:
     - stage: build
       name: Build
       script: make build
+      deploy:
+        provider: script
+        script: make push
+        on:
+          branch: master
 
-    - stage: deploy
-      if:
-        branch = master AND type != pull_request
-      name: Deploy
-      script: make push
