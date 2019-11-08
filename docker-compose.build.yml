@@ -6,4 +6,4 @@ services:
       dockerfile: 'Dockerfile'
       args:
         image_tag: ${IMAGE_TAG}
-    image: libero/continuum_auth:${IMAGE_TAG}
+    image: libero/continuum-auth:${IMAGE_TAG}

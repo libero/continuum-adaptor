@@ -18,4 +18,4 @@ build:
 	${DOCKER_COMPOSE} build continuum-auth 
 
 push:
-	${PUSH_COMMAND} continuum_auth
+	${PUSH_COMMAND} continuum-auth
