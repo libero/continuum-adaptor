@@ -1,0 +1,9 @@
+version: '3'
+services:
+  continuum-auth:
+    build:
+      context: "."
+      dockerfile: 'Dockerfile'
+      args:
+        image_tag: ${IMAGE_TAG}
+    image: libero/continuum_auth:${IMAGE_TAG}
