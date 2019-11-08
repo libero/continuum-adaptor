@@ -1,11 +1,13 @@
 language: minimal
+
 env:
   global:
     - IMAGE_TAG=$TRAVIS_COMMIT
+
 stages:
   - test
   - build
-  - deploy
+
 jobs:
   include:
     - stage: test
