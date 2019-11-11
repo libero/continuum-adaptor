@@ -7,6 +7,7 @@
         "test": "jest",
         "build": "tsc",
         "lint": "eslint --ext .js,.ts,.tsx .",
+        "start:dev": "dotenv -e ../.env -- nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty",
         "update:internal": "yarn upgrade -P @libero"
     },
     "repository": {
@@ -42,6 +43,7 @@
     "devDependencies": {
         "@typescript-eslint/eslint-plugin": "^2.5.0",
         "@typescript-eslint/parser": "^2.5.0",
+        "dotenv": "^8.2.0",
         "eslint": "^6.6.0",
         "eslint-config-prettier": "^6.5.0",
         "eslint-plugin-prettier": "^3.1.1",
@@ -49,7 +51,7 @@
         "husky": "^3.0.9",
         "jest": "^24.9.0",
         "nodemon": "^1.19.4",
-        "pino-pretty": "^3.2.1",
+        "pino-pretty": "^3.3.0",
         "prettier": "^1.18.2",
         "ts-jest": "^24.1.0",
         "ts-node": "^8.3.0",

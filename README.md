@@ -1,5 +1,15 @@
 # continuum-auth
 
+## Setup
+
+Copy the .env.example file
+
+```sh
+cp .env.example .env
+```
+
+## Overview
+
 **The purpose of this service is to implement an interface to connect the eLife journal to libero reviewer**
 
 A connector service so that eLife's deployment of libero can authenticate using the existing journal login system. After successful authentication, this service will redirect to an endpoint, with a
