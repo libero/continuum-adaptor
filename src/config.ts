@@ -8,7 +8,7 @@ const eventConfig: EventConfig = {
 const config = {
     auth: {
         // Where the /login route sends you - a.k.a the identity server
-        login_redirect_url: `${process.env.CONTINUUM_LOGIN_URL}:${process.env.CONTINUUM_LOGIN_PORT}/submit`,
+        login_redirect_url: `${process.env.CONTINUUM_LOGIN_URL}`,
         // App entry point i.e. the resource server that needs authentication
         authorised_redirect_url: `http://localhost:${process.env.CLIENT_PORT}/login`,
     },
