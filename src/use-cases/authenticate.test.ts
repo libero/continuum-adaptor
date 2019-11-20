@@ -91,7 +91,7 @@ describe('Authenticate Handler', () => {
         const redirectUrl = 'http://login_redirect_url';
 
         beforeEach(() => {
-            config.auth.authorised_redirect_url = redirectUrl;
+            config.auth.authenticated_redirect_url = redirectUrl;
 
             decodeJournalTokenMock.mockImplementation(() => Option.of({ id: 'id' } as jwt.JournalAuthToken));
             encodeMock.mockImplementation(() => encodedToken);
