@@ -26,6 +26,4 @@ const config = {
     event: eventConfig,
 };
 
-console.log(process.env.AUTHENTICATION_JWT_SECRET);
-
 export default config;
