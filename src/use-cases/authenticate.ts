@@ -5,7 +5,7 @@ import { encode, decodeJournalToken } from '../jwt';
 import { ProfilesRepo } from '../repo/profiles';
 import { v4 } from 'uuid';
 import config from '../config';
-import { UserIdentity } from '@libero/auth-utils';
+import { UserIdentity } from '@libero/auth-token';
 import { Event, EventBus } from '@libero/event-bus';
 import { UserLoggedInPayload, LiberoEventType } from '@libero/event-types';
 
