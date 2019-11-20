@@ -10,7 +10,7 @@ const config = {
         // Where the /login route sends you - a.k.a the identity server
         login_redirect_url: `${process.env.CONTINUUM_LOGIN_URL}`,
         // App entry point i.e. the resource server that needs authentication
-        authorised_redirect_url: `http://localhost:${process.env.CLIENT_PORT}/login`,
+        authenticated_redirect_url: `${process.env.AUTHENTICATED_REDIRECT_URL}`,
     },
     internal_jwt: {
         // This token is global to libero services
