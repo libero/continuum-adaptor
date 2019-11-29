@@ -22,6 +22,7 @@ const config = {
         // tokens
         secret: process.env.CONTINUUM_LOGIN_JWT_SECRET as string,
     },
+    continuumApiUrl: process.env.CONTINUUM_API_URL as string,
     port: process.env.AUTHENTICATION_PORT || 3001,
     event: eventConfig,
 };

@@ -12,7 +12,7 @@ const init = async (): Promise<void> => {
     const app: Express = express();
 
     // Setup connections to the databases/message queues etc.
-    const profilesConnector = new ProfilesService('https://api.elifesciences.org/profiles');
+    const profilesConnector = new ProfilesService(`${Config.continuumApiUrl}/profiles`);
 
     // setup event bus
     const eventBus = await setupEventBus(Config.event);
