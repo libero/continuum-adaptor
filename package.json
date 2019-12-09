@@ -7,7 +7,7 @@
         "test": "jest",
         "build": "tsc",
         "lint": "eslint --ext .js,.ts,.tsx .",
-        "start:dev": "dotenv -e .env -- nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty"
+        "start:dev": "CONFIG_PATH=config/config.json nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty"
     },
     "repository": {
         "type": "git",

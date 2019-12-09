@@ -5,7 +5,7 @@ import { InfraLogger as logger } from './logger';
 
 export const encode = (payload: object): string => {
     const {
-        internal_jwt: { secret, expiresIn },
+        internal_jwt: { secret, expires_in: expiresIn },
     } = config;
     logger.trace('jwtEncode');
 

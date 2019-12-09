@@ -7,6 +7,9 @@ import config from '../config';
 import { LiberoEventType } from '@libero/event-types';
 
 jest.mock('../logger');
+jest.mock('fs', (): object => ({
+    readFileSync: (): string => '{}',
+}));
 
 describe('Authenticate Handler', () => {
     let profilesRepoMock;
@@ -88,10 +91,10 @@ describe('Authenticate Handler', () => {
      */
     describe('with valid token', () => {
         const encodedToken = 'encodedToken';
-        const redirectUrl = 'http://login_redirect_url';
+        const returnUrl = 'http://login_return_url';
 
         beforeEach(() => {
-            config.auth.authenticated_redirect_url = redirectUrl;
+            config.auth.login_return_url = returnUrl;
 
             decodeJournalTokenMock.mockImplementation(() => Option.of({ id: 'id' } as jwt.JournalAuthToken));
             encodeMock.mockImplementation(() => encodedToken);
@@ -119,7 +122,7 @@ describe('Authenticate Handler', () => {
             await flushPromises();
 
             expect(responseMock.redirect).toHaveBeenCalledTimes(1);
-            expect(responseMock.redirect).toHaveBeenCalledWith(`${redirectUrl}#${encodedToken}`);
+            expect(responseMock.redirect).toHaveBeenCalledWith(`${returnUrl}#${encodedToken}`);
         });
 
         it('should send logged in event for audit', async () => {

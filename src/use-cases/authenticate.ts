@@ -35,7 +35,7 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
                 // Controller: perform the requests to the various services and fetch the user data
 
                 const {
-                    auth: { authenticated_redirect_url },
+                    auth: { login_return_url },
                 } = config;
                 const parsedToken = decodeJournalToken(token);
 
@@ -105,7 +105,7 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
                         };
                         eventBus.publish(auditEvent);
 
-                        res.redirect(`${authenticated_redirect_url}#${outputToken}`);
+                        res.redirect(`${login_return_url}#${outputToken}`);
                     })
                     .getOrElseL(() => {
                         logger.warn('unauthorized');
