@@ -1,0 +1,29 @@
+version: '3'
+services:
+  continuum-auth:
+    image: node:10
+    ports:
+      - "${CONTINUUM_AUTH_PORT:-3001}:3001"
+    working_dir: "/src"
+    healthcheck:
+      test: "curl localhost:3001/health"
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    command: ["bash", "-c", "yarn && yarn run start:dev"]
+    environment: 
+      CONFIG_PATH: /etc/reviewer/config.json
+    volumes:
+      - ./:/src/:z
+      - ./config/:/etc/reviewer/:z
+    networks:
+      - "infra_rabbit"
+      - "infra_api"
+
+networks:
+  infra_api:
+    external:
+      name: "infra_api"
+  infra_rabbit:
+    external:
+      name: "infra_rabbit"

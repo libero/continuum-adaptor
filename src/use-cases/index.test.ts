@@ -2,6 +2,9 @@ import { Request, Response } from 'express';
 import { HealthCheck } from './index';
 
 jest.mock('../logger');
+jest.mock('fs', (): object => ({
+    readFileSync: (): string => '{}',
+}));
 
 describe('healthcheck', () => {
     it('is OK', () => {

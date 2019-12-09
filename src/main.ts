@@ -2,7 +2,7 @@ import * as express from 'express';
 import { Express, Request, Response } from 'express';
 import { InfraLogger as logger } from './logger';
 import { ProfilesService } from './repo/profiles';
-import { HealthCheck, Login, Authenticate } from './use-cases';
+import { HealthCheck, Authenticate } from './use-cases';
 import { setupEventBus } from './event-bus';
 import Config from './config';
 
@@ -12,7 +12,7 @@ const init = async (): Promise<void> => {
     const app: Express = express();
 
     // Setup connections to the databases/message queues etc.
-    const profilesConnector = new ProfilesService(`${Config.continuumApiUrl}/profiles`);
+    const profilesConnector = new ProfilesService(`${Config.continuum_api_url}/profiles`);
 
     // setup event bus
     const eventBus = await setupEventBus(Config.event);
@@ -27,10 +27,6 @@ const init = async (): Promise<void> => {
 
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
-
-    app.post('/login', Login);
-    app.get('/login', Login);
-
     app.get('/authenticate/:token', Authenticate(profilesConnector, eventBus));
 
     app.listen(Config.port, () => logger.info(`Service listening on port ${Config.port}`));
