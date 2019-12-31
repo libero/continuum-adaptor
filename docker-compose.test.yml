@@ -1,0 +1,29 @@
+version: '3'
+services:
+  continuum-auth:
+    image: libero/continuum-auth:local
+    ports:
+      - "${AUTHENTICATION_PORT:-3001}:3001"
+    environment: 
+      CONFIG_PATH: /etc/reviewer/config.json
+    volumes:
+      - ./tests/config.json:/etc/reviewer/config.json
+    healthcheck:
+      test: "curl localhost:3001/health"
+      interval: 1m
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: test_rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 2s
+      timeout: 30s
+      retries: 10
