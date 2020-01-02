@@ -2,6 +2,7 @@ version: '3'
 services:
   continuum-auth:
     image: libero/continuum-auth:local
+    container_name: test_continuum_auth
     ports:
       - "${AUTHENTICATION_PORT:-3001}:3001"
     environment: 
@@ -9,7 +10,7 @@ services:
     volumes:
       - ./tests/config.json:/etc/reviewer/config.json
     healthcheck:
-      test: "curl localhost:3001/health"
+      test: 'echo -e "GET /health\n\n" | nc localhost ${AUTHENTICATION_PORT:-3001}'
       interval: 1m
       timeout: 10s
       retries: 3
