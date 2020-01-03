@@ -114,7 +114,7 @@ describe('Authenticate Handler', () => {
             expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'unauthorised' });
         });
 
-        it('should redirect to correct url', async () => {
+        it('should redirect to correct url and contain an encoded token', async () => {
             const handler = Authenticate(profilesRepoMock, eventBusMock);
 
             handler(requestMock as Request, (responseMock as unknown) as Response);

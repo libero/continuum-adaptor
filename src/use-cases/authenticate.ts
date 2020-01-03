@@ -19,10 +19,10 @@ import { UserLoggedInPayload, LiberoEventType } from '@libero/event-types';
 //   "new-session": true
 // };
 
-export const Authenticate = async (profilesService: ProfilesRepo, eventBus: EventBus) => (
+export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) => async (
     req: Request,
     res: Response,
-): void | Promise<void> => {
+): Promise<void> => {
     if (!('token' in req.params)) {
         logger.warn('noTokenProvided');
         res.status(500).json({ ok: false });
@@ -48,6 +48,7 @@ export const Authenticate = async (profilesService: ProfilesRepo, eventBus: Even
         res.status(403).json({ ok: false, msg: 'unauthorised' });
         throw new Error();
     }
+
     const id = parsedToken.get();
     const maybeProfile = await profilesService.getProfileById(id);
 
