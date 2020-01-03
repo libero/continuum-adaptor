@@ -5,5 +5,5 @@
     "login_return_url": "http://localhost:9000/login",
     "authentication_jwt_secret": "super_secret_jam",
     "continuum_jwt_secret": "some_secret_from_journal",
-    "continuum_api_url": "https://continuumtest--cdn-journal.elifesciences.org/"
+    "continuum_api_url": "http://localhost:3002/"
 }
