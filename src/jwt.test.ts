@@ -4,16 +4,10 @@ import { None } from 'funfix';
 
 jest.mock('jsonwebtoken');
 jest.mock('./logger');
-jest.mock('./config', () => ({
-    default: {
-        journal_jwt: {
-            secret: 'secret',
-        },
-    },
-}));
 
 describe('jwt', () => {
     describe('decodeJournalToken', () => {
+        const secret = 'secret';
         it('returns JournalAuthToken if token verified', () => {
             (verify as jest.Mock).mockReturnValueOnce({
                 iss: 'iss',
@@ -22,7 +16,7 @@ describe('jwt', () => {
                 id: 'id',
                 'new-session': true,
             });
-            expect(decodeJournalToken('token').get()).toEqual({
+            expect(decodeJournalToken(secret, 'token').get()).toEqual({
                 iss: 'iss',
                 iat: 1,
                 exp: 1,
@@ -37,7 +31,7 @@ describe('jwt', () => {
             (verify as jest.Mock).mockImplementation(() => {
                 throw new Error('not verified');
             });
-            expect(decodeJournalToken('token')).toBe(None);
+            expect(decodeJournalToken(secret, 'token')).toBe(None);
             expect(verify).toHaveBeenCalledWith('token', 'secret');
         });
     });

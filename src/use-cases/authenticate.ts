@@ -3,10 +3,10 @@ import { DomainLogger as logger } from '../logger';
 import { encode, decodeJournalToken } from '../jwt';
 import { ProfilesRepo } from '../repo/profiles';
 import { v4 } from 'uuid';
-import config from '../config';
 import { UserIdentity } from '@libero/auth-token';
 import { Event, EventBus } from '@libero/event-bus';
 import { UserLoggedInPayload, LiberoEventType } from '@libero/event-types';
+import { Config } from '../config';
 
 // This is the endpoint that does the actual token exchange/user lookup and signing the output token
 // And yeah, I know the controller/usecase code shouldn't be mixed but idec, we can refactor it at some point
@@ -19,7 +19,7 @@ import { UserLoggedInPayload, LiberoEventType } from '@libero/event-types';
 //   "new-session": true
 // };
 
-export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) => async (
+export const Authenticate = (config: Config, profilesService: ProfilesRepo, eventBus: EventBus) => async (
     req: Request,
     res: Response,
 ): Promise<void> => {
@@ -37,19 +37,15 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
 
     // Controller: perform the requests to the various services and fetch the user data
 
-    const {
-        auth: { login_return_url },
-    } = config;
-
-    const parsedToken = decodeJournalToken(token);
+    const parsedToken = decodeJournalToken(config.continuum_jwt_secret, token);
 
     if (parsedToken.isEmpty()) {
-        logger.error('Invalid token');
-        res.status(403).json({ ok: false, msg: 'unauthorised' });
-        throw new Error();
+        logger.warn('Invalid token');
+        res.status(500).json({ ok: false, msg: 'Invalid token' });
+        return;
     }
 
-    const id = parsedToken.get();
+    const id = parsedToken.get().id;
     const maybeProfile = await profilesService.getProfileById(id);
 
     if (maybeProfile.isEmpty()) {
@@ -58,11 +54,13 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
         return;
     }
     const profile = maybeProfile.get();
-    logger.info('getProfile', profile);
+
     // TODO: Calculate user-role
-    const emailAddress = profile.emailAddresses.length > 0 ? profile.emailAddresses[0].value : null;
 
     const identity = {
+        // we need this to be the libero user id
+        // at the moment we just generate any old one because we don't have
+        // the peoples service.
         user_id: v4(), // TODO: this needs to be a useful value at some point
         external: [
             {
@@ -87,13 +85,17 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
         meta: null,
     };
 
+    const hasEmail = 'emailAddresses' in profile && profile.emailAddresses.length > 0;
+    const emailAddress = hasEmail ? profile.emailAddresses[0].value : null;
+
+    // We don't care if there is no email
     if (emailAddress) {
         payload.meta = {
             email: emailAddress,
         };
     }
 
-    const outputToken = encode(payload);
+    const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
 
     // send audit logged in message
     const auditEvent: Event<UserLoggedInPayload> = {
@@ -104,14 +106,12 @@ export const Authenticate = (profilesService: ProfilesRepo, eventBus: EventBus) 
             source: 'continuum-auth',
         },
         payload: {
-            name: profile.name.preferred,
             userId: payload.identity.user_id,
-            email: profile.emailAddresses.length > 0 ? profile.emailAddresses[0].value : '',
             result: 'authorized',
             timestamp: new Date(),
         },
     };
     eventBus.publish(auditEvent);
 
-    res.redirect(`${login_return_url}#${outputToken}`);
+    res.redirect(`${config.login_return_url}#${encodedPayload}`);
 };
