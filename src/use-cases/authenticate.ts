@@ -113,4 +113,4 @@ export const Authenticate = async (profilesService: ProfilesRepo, eventBus: Even
     eventBus.publish(auditEvent);
 
     res.redirect(`${login_return_url}#${outputToken}`);
-}
+};
