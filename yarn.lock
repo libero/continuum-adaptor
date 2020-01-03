@@ -321,10 +321,10 @@
     rs-channel-node "^0.0.3"
     uuid "^3.3.3"
 
-"@libero/event-types@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.1.0.tgz#6fd565a86e77b1fbadf0b01e84d37fa3ac5dd28d"
-  integrity sha512-4tgEolE3vZIeReSfL8GlSe1ug9SPUtad34boe2bjqEzW2dtGgQGf7XJtcPmk1PgKePxhmcHD71C47ImhRrluog==
+"@libero/event-types@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.1.3.tgz#d1c716a1c3840f625204cd3e4b1c1eb57d501266"
+  integrity sha512-GFA8TQ/y9ilJgoRc+Ur22WZmDZLVSxkEDACg2XeXt5ks3NXRhrjz7ly0MOBqFbaHP8M9qp+6kInqjwWGhSpLfw==
 
 "@types/amqplib@^0.5.13":
   version "0.5.13"
