@@ -10,9 +10,12 @@ describe('Authenticate', (): void => {
     let server: Server;
     beforeAll(() => {
         const app: express.Express = express();
+        app.get('/redirect_destination', (_, resp) => {
+            resp.status(200).send('Successful redirect');
+        });
         app.get('/profiles/*', (_, resp) => {
             console.log('We hit this correctly.');
-            resp.json({
+            resp.status(200).json({
                 id: 'TEST_ID',
                 name: {
                     preferred: 'TEST_PREFERRED_NAME',
@@ -35,11 +38,12 @@ describe('Authenticate', (): void => {
 
     // happy path
     it('authenticates a user session token', async (): Promise<void> => {
+        // TODO: remove magic number for adding exp time to now
         const mockJournalToken = sign(
             {
                 iss: 'journal--prod',
                 iat: 1567503944,
-                exp: 1567504004,
+                exp: new Date().getTime() + 20000,
                 id: 'TEST_ID',
                 'new-session': true,
             },
@@ -49,8 +53,8 @@ describe('Authenticate', (): void => {
         // Remeber response is redirect. We need to catch this correctly for assertions
         await axios
             .get(`http://localhost:3001/authenticate/${mockJournalToken}`)
-            .then(() => {
-                console.log('RESPONSE: ');
+            .then(res => {
+                console.log('RESPONSE: ', res);
             })
             .catch((error: Error) => {
                 console.log('ERROR: ', error.stack);
