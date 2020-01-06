@@ -2,8 +2,9 @@ import { Request, Response } from 'express';
 import { None, Option } from 'funfix';
 import * as flushPromises from 'flush-promises';
 import { Authenticate } from './authenticate';
+import { verify } from 'jsonwebtoken';
 import * as jwt from '../jwt';
-import config from '../config';
+import { Config } from '../config';
 import { LiberoEventType } from '@libero/event-types';
 
 jest.mock('../logger');
@@ -11,13 +12,22 @@ jest.mock('fs', (): object => ({
     readFileSync: (): string => '{}',
 }));
 
+const config: Config = {
+    port: 3000,
+    rabbitmq_url: 'rabbitmq',
+    login_url: 'login-url',
+    login_return_url: 'login-return',
+    authentication_jwt_secret: 'ca-secret',
+    continuum_jwt_secret: 'continuum-secret',
+    continuum_api_url: 'somewhere',
+};
+
 describe('Authenticate Handler', () => {
     let profilesRepoMock;
     let eventBusMock;
     let requestMock;
     let responseMock;
     let decodeJournalTokenMock;
-    let encodeMock;
 
     beforeEach(() => {
         profilesRepoMock = {
@@ -37,7 +47,6 @@ describe('Authenticate Handler', () => {
             redirect: jest.fn(),
         };
         decodeJournalTokenMock = jest.spyOn(jwt, 'decodeJournalToken');
-        encodeMock = jest.spyOn(jwt, 'encode');
 
         responseMock.status.mockImplementation(() => responseMock);
         profilesRepoMock.getProfileById.mockImplementation(() =>
@@ -59,7 +68,7 @@ describe('Authenticate Handler', () => {
      */
     describe('with invalid token', () => {
         it('should return an error when no token provided', async () => {
-            const handler = Authenticate(profilesRepoMock, eventBusMock);
+            const handler = Authenticate(config, profilesRepoMock, eventBusMock);
             requestMock.params = {};
 
             handler(requestMock as Request, (responseMock as unknown) as Response);
@@ -75,14 +84,16 @@ describe('Authenticate Handler', () => {
         it('should throw error with invalid token', async () => {
             decodeJournalTokenMock.mockImplementation(() => None);
 
-            const handler = Authenticate(profilesRepoMock, eventBusMock);
+            const handler = Authenticate(config, profilesRepoMock, eventBusMock);
 
-            expect(handler(requestMock as Request, (responseMock as unknown) as Response)).rejects.toThrowError();
+            handler(requestMock as Request, (responseMock as unknown) as Response);
+
+            await flushPromises();
 
             expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(403);
+            expect(responseMock.status).toHaveBeenCalledWith(500);
             expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'unauthorised' });
+            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Invalid token' });
         });
     });
 
@@ -90,18 +101,16 @@ describe('Authenticate Handler', () => {
      * Test cases where we have a valid token
      */
     describe('with valid token', () => {
-        const encodedToken = 'encodedToken';
         const returnUrl = 'http://login_return_url';
 
         beforeEach(() => {
-            config.auth.login_return_url = returnUrl;
+            config.login_return_url = returnUrl;
 
             decodeJournalTokenMock.mockImplementation(() => Option.of({ id: 'id' } as jwt.JournalAuthToken));
-            encodeMock.mockImplementation(() => encodedToken);
         });
 
         it('should return an error when no profile found', async () => {
-            const handler = Authenticate(profilesRepoMock, eventBusMock);
+            const handler = Authenticate(config, profilesRepoMock, eventBusMock);
             profilesRepoMock.getProfileById.mockImplementation(() => Promise.resolve(None));
 
             handler(requestMock as Request, (responseMock as unknown) as Response);
@@ -114,19 +123,68 @@ describe('Authenticate Handler', () => {
             expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'unauthorised' });
         });
 
-        it('should redirect to correct url', async () => {
-            const handler = Authenticate(profilesRepoMock, eventBusMock);
+        it('should redirect to correct url and contain an encoded token', async () => {
+            const handler = Authenticate(config, profilesRepoMock, eventBusMock);
 
             handler(requestMock as Request, (responseMock as unknown) as Response);
 
             await flushPromises();
 
             expect(responseMock.redirect).toHaveBeenCalledTimes(1);
-            expect(responseMock.redirect).toHaveBeenCalledWith(`${returnUrl}#${encodedToken}`);
+            const firstArg = responseMock.redirect.mock.calls[0][0];
+            const [url, token] = firstArg.split('#');
+
+            expect(url).toBe(returnUrl);
+
+            // decode now
+            const decoded = verify(token, config.authentication_jwt_secret) as object;
+
+            const expectedPayload = {
+                identity: {
+                    external: [
+                        {
+                            domain: 'elife-profiles',
+                            id: 'id',
+                        },
+                        {
+                            domain: 'orcid',
+                            id: 'orcid',
+                        },
+                    ],
+                },
+                iss: 'continuum-auth',
+                meta: {
+                    email: 'foo@example.com',
+                },
+                roles: [
+                    {
+                        journal: 'elife',
+                        kind: 'author',
+                    },
+                ],
+                token_version: '0.1-alpha',
+            };
+
+            // iat, exp
+            // "user_id": "b555542f-d846-42d7-a6d4-bcfa6529528c",
+            // token_id
+            expect(typeof decoded['iat']).toBe('number');
+            delete decoded['iat'];
+
+            expect(typeof decoded['exp']).toBe('number');
+            delete decoded['exp'];
+
+            expect(typeof decoded['identity']['user_id']).toBe('string');
+            delete decoded['identity']['user_id'];
+
+            expect(typeof decoded['token_id']).toBe('string');
+            delete decoded['token_id'];
+
+            expect(decoded).toStrictEqual(expectedPayload);
         });
 
         it('should send logged in event for audit', async () => {
-            const handler = Authenticate(profilesRepoMock, eventBusMock);
+            const handler = Authenticate(config, profilesRepoMock, eventBusMock);
 
             handler(requestMock as Request, (responseMock as unknown) as Response);
 
@@ -135,8 +193,9 @@ describe('Authenticate Handler', () => {
             const auditEvent = eventBusMock.publish.mock.calls[0][0];
             expect(eventBusMock.publish).toHaveBeenCalledTimes(1);
             expect(auditEvent.eventType).toBe(LiberoEventType.userLoggedInIdentifier);
-            expect(auditEvent.payload.name).toBe('bar');
-            expect(auditEvent.payload.email).toBe('foo@example.com');
+            expect(auditEvent.payload.userId).toHaveLength(36);
+            expect(auditEvent.payload.timestamp instanceof Date).toBeTruthy();
+            expect(auditEvent.payload.result).toBe('authorized');
         });
     });
 });

@@ -6,7 +6,7 @@ import { checkStatus } from '../utils';
 
 // Eventually these interfaces will be moved to domainland
 export interface ProfilesRepo {
-    getProfileById(string): Promise<Option<UserProfile>>;
+    getProfileById(id: string): Promise<Option<UserProfile>>;
 }
 
 export interface UserProfile {

@@ -4,7 +4,8 @@ import { InfraLogger as logger } from './logger';
 import { ProfilesService } from './repo/profiles';
 import { HealthCheck, Authenticate } from './use-cases';
 import { setupEventBus } from './event-bus';
-import Config from './config';
+import config from './config';
+import { EventConfig } from '@libero/event-bus';
 
 const init = async (): Promise<void> => {
     logger.info('Starting service');
@@ -12,10 +13,10 @@ const init = async (): Promise<void> => {
     const app: Express = express();
 
     // Setup connections to the databases/message queues etc.
-    const profilesConnector = new ProfilesService(`${Config.continuum_api_url}/profiles`);
+    const profilesConnector = new ProfilesService(`${config.continuum_api_url}/profiles`);
 
     // setup event bus
-    const eventBus = await setupEventBus(Config.event);
+    const eventBus = await setupEventBus({ url: config.rabbitmq_url } as EventConfig);
     logger.info('started event bus');
 
     // Setup routes
@@ -27,9 +28,9 @@ const init = async (): Promise<void> => {
 
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
-    app.get('/authenticate/:token', Authenticate(profilesConnector, eventBus));
+    app.get('/authenticate/:token', Authenticate(config, profilesConnector, eventBus));
 
-    app.listen(Config.port, () => logger.info(`Service listening on port ${Config.port}`));
+    app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));
 };
 
 init();
