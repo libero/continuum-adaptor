@@ -104,7 +104,7 @@ describe('Authenticate', (): void => {
             expect(verifiedReturnToken).toStrictEqual(expectedPayload);
         });
     });
-    // No token
+
     it('rejects request when no token passed', async (): Promise<void> => {
         expect.assertions(2)
         await axios.get('http://localhost:3001/authenticate').catch(({response}) => {
@@ -113,5 +113,11 @@ describe('Authenticate', (): void => {
         });
     });
 
-    // Bad journal token
+    it('rejects request when invalid token passed', async (): Promise<void> => {
+        expect.assertions(2)
+        await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({response}) => {
+            expect(response.status).toBe(500);
+            expect(response.data).toEqual({ ok: false, msg: 'Invalid token' })
+        });
+    });
 });
