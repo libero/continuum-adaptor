@@ -4,11 +4,11 @@
     "description": "",
     "main": "dist/index.js",
     "scripts": {
-        "test": "jest",
+        "test": "jest ./src",
         "build": "tsc",
         "lint": "eslint --ext .js,.ts,.tsx .",
         "prettier": "prettier --write '{src,tests}/**/*ts'",
-        "start:dev": "CONFIG_PATH=config/config.json nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty",
+        "start:dev": "CONFIG_PATH=tests/config/continuum-auth.json nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty",
         "test:integration": "jest ./tests/"
     },
     "repository": {
