@@ -1,7 +1,7 @@
 version: '3'
 services:
   continuum-auth:
-    image: libero/continuum-auth:local
+    image: libero/continuum-auth:${IMAGE_TAG:-local}
     container_name: test_continuum_auth
     ports:
       - "${AUTHENTICATION_PORT:-3001}:3001"
