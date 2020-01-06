@@ -13,7 +13,7 @@
     "incremental": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": true
   },
   "exclude": ["node_modules"],
   "include": ["src/**/*.ts"]
