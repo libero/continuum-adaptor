@@ -28,7 +28,7 @@ const init = async (): Promise<void> => {
 
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
-    app.get('/authenticate/:token', Authenticate(config, profilesConnector, eventBus));
+    app.get('/authenticate/:token?', Authenticate(config, profilesConnector, eventBus));
 
     app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));
 };

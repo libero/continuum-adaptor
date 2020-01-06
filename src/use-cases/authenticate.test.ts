@@ -78,7 +78,7 @@ describe('Authenticate Handler', () => {
             expect(responseMock.status).toHaveBeenCalledTimes(1);
             expect(responseMock.status).toHaveBeenCalledWith(500);
             expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false });
+            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'No token' });
         });
 
         it('should throw error with invalid token', async () => {
@@ -120,7 +120,7 @@ describe('Authenticate Handler', () => {
             expect(responseMock.status).toHaveBeenCalledTimes(1);
             expect(responseMock.status).toHaveBeenCalledWith(403);
             expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'unauthorised' });
+            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Unauthorised' });
         });
 
         it('should redirect to correct url and contain an encoded token', async () => {

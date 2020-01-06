@@ -7,6 +7,11 @@ import { sign, verify } from 'jsonwebtoken';
 const configPath = `${__dirname}/config/continuum-auth.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
 
+// port the mocked profile / redirect server will expose
+const MOCK_SERVER_PORT = 3002;
+// time in ms from now the mock journal token will be valid for
+const MOCK_TOKEN_EXP = 20000
+
 describe('Authenticate', (): void => {
     let server: Server;
     beforeAll(() => {
@@ -30,10 +35,7 @@ describe('Authenticate', (): void => {
                 affiliations: [],
             });
         });
-        //TODO: remove magic port number
-        server = app.listen(3002);
-
-        // Do we need a health check on this awaited?
+        server = app.listen(MOCK_SERVER_PORT);
     });
 
     afterAll(() => {
@@ -42,23 +44,21 @@ describe('Authenticate', (): void => {
 
     // happy path
     it('authenticates a user session token', async (): Promise<void> => {
-        // TODO: remove magic number for adding exp time to now
         const mockJournalToken = sign(
             {
                 iss: 'journal--prod',
                 iat: 1567503944,
-                exp: new Date().getTime() + 20000,
+                exp: new Date().getTime() + MOCK_TOKEN_EXP,
                 id: 'TEST_ID',
                 'new-session': true,
             },
             config.continuum_jwt_secret,
         );
 
-        // Remeber response is redirect. We need to catch this correctly for assertions
+        expect.assertions(8);
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`).then(res => {
             expect(res.status).toBe(200);
             expect(res.data).toBe('Successful redirect')
-
             const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
             expect(redirectUrl).toBe(config.login_return_url);
             const verifiedReturnToken = verify(returnedToken, config.authentication_jwt_secret);
@@ -103,9 +103,15 @@ describe('Authenticate', (): void => {
 
             expect(verifiedReturnToken).toStrictEqual(expectedPayload);
         });
-        // unwrap token assert data from profile correct
     });
     // No token
+    it('rejects request when no token passed', async (): Promise<void> => {
+        expect.assertions(2)
+        await axios.get('http://localhost:3001/authenticate').catch(({response}) => {
+            expect(response.status).toBe(500);
+            expect(response.data).toEqual({ ok: false, msg: 'No token' })
+        });
+    });
 
     // Bad journal token
 });
