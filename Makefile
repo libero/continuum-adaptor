@@ -21,7 +21,7 @@ test_integration:
 	${DOCKER_COMPOSE_TEST} up -d
 	./.scripts/docker/wait-healthy.sh test_rabbitmq 20
 	./.scripts/docker/wait-healthy.sh test_continuum_auth 120
-	CONFIG_PATH=./tests/config.json yarn test:integration
+	CONFIG_PATH=./tests/config/continuum-auth.json yarn test:integration
 	
 build:
 	${DOCKER_COMPOSE} build continuum-auth 
