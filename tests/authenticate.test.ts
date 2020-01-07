@@ -102,6 +102,8 @@ describe('Authenticate', (): void => {
             delete verifiedReturnToken['token_id'];
 
             expect(verifiedReturnToken).toStrictEqual(expectedPayload);
+        }).catch(error => {
+            console.log(JSON.stringify(error,null,4));
         });
     });
 
