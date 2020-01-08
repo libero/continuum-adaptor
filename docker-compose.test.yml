@@ -22,14 +22,14 @@ services:
     image: liberoadmin/reviewer-mocks:latest
     container_name: test_reviewer_mocks
     ports:
-      - "${CONTINUUM_MOCKS_PORT:-3003}:3003"
+      - "${REVIEWER_MOCKS_PORT:-3003}:3003"
     environment: 
       DATA_DIRECTORY_PATH: "/etc/mock-data/"
     volumes:
       - ./tests/config/reviewer-mocks.json:/etc/reviewer/config.json:z
       - ./tests/mock-data:/etc/mock-data/ 
     healthcheck:
-      test: 'echo -e "GET /health\n\n" | nc localhost ${CONTINUUM_MOCKS_PORT:-3003}'
+      test: 'echo -e "GET /health\n\n" | nc localhost ${REVIEWER_MOCKS_PORT:-3003}'
       interval: 10s
       timeout: 10s
       retries: 3
