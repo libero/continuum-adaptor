@@ -1,0 +1,7 @@
+{
+  "port": 3003,
+  "login_return_url": "",
+  "continuum_jwt_secret": "",
+  "continuum_return_url": "",
+  "authentication_jwt_secret": ""
+}

@@ -1,0 +1,14 @@
+{
+  "id": "TEST_ID",
+  "name": {
+      "preferred": "TEST_PREFERRED_NAME",
+      "index": "TEST_INDEX_NAME"
+  },
+  "orcid": "0000-0001-2345-6789",
+  "emailAddresses": [
+      {
+          "value": "test@example.com"
+      }
+  ],
+  "affiliations": []
+}
