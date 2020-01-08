@@ -23,12 +23,11 @@ export const Authenticate = (config: Config, profilesService: ProfilesRepo, even
     req: Request,
     res: Response,
 ): Promise<void> => {
-    if (!('token' in req.params)) {
+    if (!req.params.token) {
         logger.warn('noTokenProvided');
-        res.status(500).json({ ok: false });
+        res.status(500).json({ ok: false, msg: 'No token' });
         return;
     }
-
     const token = req.params['token'];
     // Decode the token that's passed to this endpoint from whatever OAuth provider we go with (I'm guessing ORCiD)
     // Somehow resolve that user's identifier/metadata from the profiles service
@@ -50,7 +49,7 @@ export const Authenticate = (config: Config, profilesService: ProfilesRepo, even
 
     if (maybeProfile.isEmpty()) {
         logger.warn('unauthorized');
-        res.status(403).json({ ok: false, msg: 'unauthorised' });
+        res.status(403).json({ ok: false, msg: 'Unauthorised' });
         return;
     }
     const profile = maybeProfile.get();

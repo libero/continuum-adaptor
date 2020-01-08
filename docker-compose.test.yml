@@ -1,0 +1,47 @@
+version: '3'
+services:
+  continuum-auth:
+    image: libero/continuum-auth:${IMAGE_TAG:-local}
+    container_name: test_continuum_auth
+    ports:
+      - "${AUTHENTICATION_PORT:-3001}:3001"
+    environment: 
+      CONFIG_PATH: /etc/reviewer/config.json
+    volumes:
+      - ./tests/config/continuum-auth.json:/etc/reviewer/config.json
+    healthcheck:
+      test: 'echo -e "GET /health\n\n" | nc localhost ${AUTHENTICATION_PORT:-3001}'
+      interval: 10s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - rabbitmq
+      - reviewer-mocks
+
+  reviewer-mocks:
+    image: liberoadmin/reviewer-mocks:latest
+    container_name: test_reviewer_mocks
+    ports:
+      - "${REVIEWER_MOCKS_PORT:-3003}:3003"
+    environment: 
+      DATA_DIRECTORY_PATH: "/etc/mock-data/"
+    volumes:
+      - ./tests/config/reviewer-mocks.json:/etc/reviewer/config.json:z
+      - ./tests/mock-data:/etc/mock-data/ 
+    healthcheck:
+      test: 'echo -e "GET /health\n\n" | nc localhost ${REVIEWER_MOCKS_PORT:-3003}'
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: test_rabbitmq
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 2s
+      timeout: 30s
+      retries: 10

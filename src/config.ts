@@ -12,6 +12,8 @@ export interface Config {
 
 const configPath = process.env.CONFIG_PATH ? process.env.CONFIG_PATH : '/etc/reviewer/config.json';
 const thisConfig: Config = JSON.parse(readFileSync(configPath, 'utf8'));
-thisConfig.continuum_jwt_secret = process.env.CONTINUUM_LOGIN_JWT_SECRET as string;
+thisConfig.continuum_jwt_secret = process.env.CONTINUUM_LOGIN_JWT_SECRET
+    ? (process.env.CONTINUUM_LOGIN_JWT_SECRET as string)
+    : thisConfig.continuum_jwt_secret;
 
 export default thisConfig;

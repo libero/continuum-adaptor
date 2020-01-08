@@ -18,10 +18,8 @@ jobs:
       script:
         - make lint
         - make test
-
-    - stage: build
-      name: Build
-      script: make build
+        - make build
+        - make test_integration
       deploy:
         provider: script
         script: make push

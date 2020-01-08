@@ -16,14 +16,3 @@ services:
     volumes:
       - ./:/src/:z
       - ./config/:/etc/reviewer/:z
-    networks:
-      - "infra_rabbit"
-      - "infra_api"
-
-networks:
-  infra_api:
-    external:
-      name: "infra_api"
-  infra_rabbit:
-    external:
-      name: "infra_rabbit"
