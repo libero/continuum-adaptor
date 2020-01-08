@@ -28,6 +28,6 @@ COPY --from=source /app/dist/ ./dist/
 EXPOSE 3000
 
 HEALTHCHECK --interval=1m --timeout=1s \
-	CMD curl -f http://localhost:3000/health || exit 1
+	CMD echo -e "GET /health\n\n" | nc localhost 3000
 
 CMD ["node", "dist/main.js"]
