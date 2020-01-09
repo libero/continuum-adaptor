@@ -5,7 +5,7 @@ import { ProfilesRepo } from '../repo/profiles';
 import { v4 } from 'uuid';
 import { UserIdentity } from '@libero/auth-token';
 import { RabbitEventBus } from '@libero/event-bus';
-import { LiberoEventType, UserLoggedInEvent } from '@libero/event-types';
+import { UserLoggedInEvent } from '@libero/event-types';
 import { Config } from '../config';
 
 // This is the endpoint that does the actual token exchange/user lookup and signing the output token
@@ -97,16 +97,11 @@ export const Authenticate = (config: Config, profilesService: ProfilesRepo, even
     const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
 
     // send audit logged in message
-    const auditEvent: UserLoggedInEvent = {
-        id: v4(),
-        created: new Date(),
-        eventType: LiberoEventType.userLoggedInIdentifier,
-        payload: {
-            userId: payload.identity.user_id,
-            result: 'authorized',
-            timestamp: new Date(),
-        },
-    };
+    const auditEvent: UserLoggedInEvent = new UserLoggedInEvent({
+        userId: payload.identity.user_id,
+        result: 'authorized',
+        timestamp: new Date(),
+    });
     eventBus.publish(auditEvent);
 
     res.redirect(`${config.login_return_url}#${encodedPayload}`);
