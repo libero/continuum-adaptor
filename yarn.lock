@@ -304,14 +304,14 @@
     pino "^5.13.2"
     uuid "^3.3.3"
 
-"@libero/event-bus@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@libero/event-bus/-/event-bus-0.1.3.tgz#b077c5443d2d2788907844e57cf705c5a1f8c6a7"
-  integrity sha512-nebE4j8bjOEhCBSpAX+m7wSRtkEic+j0tMeRjCa4BDgaaD73tTfkq67fXUN0MIK1Ov3I0V8+DlqnGOSvy58Rrw==
+"@libero/event-bus@^0.1.3", "@libero/event-bus@^0.1.4":
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@libero/event-bus/-/event-bus-0.1.4.tgz#c5d437b6cd4e2e7d113acb3fbf23ca5067f35a7d"
+  integrity sha512-MWPZBY/hmP9oDbDJPMj1mAkc+/9ZlFrjV8XFw6MxtGsBDbFHRfAISQcAMA0WSV0iPiC+v7yrnsJeFu67QIdzug==
   dependencies:
     "@types/amqplib" "^0.5.13"
     "@types/jest" "^24.0.18"
-    "@types/pino" "^5.8.10"
+    "@types/pino" "^5.14.0"
     "@types/uuid" "^3.4.5"
     amqplib "^0.5.5"
     funfix "^7.0.1"
@@ -322,9 +322,11 @@
     uuid "^3.3.3"
 
 "@libero/event-types@^0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.1.3.tgz#d1c716a1c3840f625204cd3e4b1c1eb57d501266"
-  integrity sha512-GFA8TQ/y9ilJgoRc+Ur22WZmDZLVSxkEDACg2XeXt5ks3NXRhrjz7ly0MOBqFbaHP8M9qp+6kInqjwWGhSpLfw==
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.1.4.tgz#e3d705e34d94329c989ab5aad6561d69ebd37555"
+  integrity sha512-MyhDnEtlUFL5+MJRLXcQ+9Q/Ij2bNBlkx+aHHGZUSqjAaTCjOuYQF2h5bqElkH97u3NldwggJGzQyI85kPO7eQ==
+  dependencies:
+    "@libero/event-bus" "^0.1.4"
 
 "@types/amqplib@^0.5.13":
   version "0.5.13"
@@ -368,9 +370,9 @@
     "@babel/types" "^7.3.0"
 
 "@types/bluebird@*":
-  version "3.5.28"
-  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.28.tgz#04c1a520ff076649236bc8ca21198542ce2bdb09"
-  integrity sha512-0Vk/kqkukxPKSzP9c8WJgisgGDx5oZDbsLLWIP5t70yThO/YleE+GEm2S1GlRALTaack3O7U5OS5qEm7q2kciA==
+  version "3.5.29"
+  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.29.tgz#7cd933c902c4fc83046517a1bef973886d00bdb6"
+  integrity sha512-kmVtnxTuUuhCET669irqQmPAez4KFnFVKvpleVRyfC3g+SHD1hIkFZcWLim9BVcwUBLO59o8VZE4yGCmTif8Yw==
 
 "@types/body-parser@*":
   version "1.17.1"
@@ -429,17 +431,12 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/jest-diff@*":
-  version "20.0.1"
-  resolved "https://registry.yarnpkg.com/@types/jest-diff/-/jest-diff-20.0.1.tgz#35cc15b9c4f30a18ef21852e255fdb02f6d59b89"
-  integrity sha512-yALhelO3i0hqZwhjtcr6dYyaLoCHbAMshwtj6cGxTvHZAKXHsYGdff6E8EPw3xLKY0ELUTQ69Q1rQiJENnccMA==
-
 "@types/jest@^24.0.18":
-  version "24.0.18"
-  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.18.tgz#9c7858d450c59e2164a8a9df0905fc5091944498"
-  integrity sha512-jcDDXdjTcrQzdN06+TSVsPPqxvsZA/5QkYfIZlq1JMw7FdP5AZylbOc+6B/cuDurctRe+MziUMtQ3xQdrbjqyQ==
+  version "24.0.25"
+  resolved "https://registry.yarnpkg.com/@types/jest/-/jest-24.0.25.tgz#2aba377824ce040114aa906ad2cac2c85351360f"
+  integrity sha512-hnP1WpjN4KbGEK4dLayul6lgtys6FPz0UfxMeMQCv0M+sTnzN3ConfiO72jHgLxl119guHgI8gLqDOrRLsyp2g==
   dependencies:
-    "@types/jest-diff" "*"
+    jest-diff "^24.3.0"
 
 "@types/jest@^24.0.23":
   version "24.0.23"
@@ -480,9 +477,9 @@
     "@types/node" "*"
 
 "@types/node@*":
-  version "12.12.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.3.tgz#ebfe83507ac506bc3486314a8aa395be66af8d23"
-  integrity sha512-opgSsy+cEF9N8MgaVPnWVtdJ3o4mV2aMHvDq7thkQUFt0EuOHJon4rQpJfhjmNHB+ikl0Cd6WhWIErOyQ+f7tw==
+  version "13.1.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.5.tgz#4d5efc52a1d3e45d13e5ec9f911cbc5b089ccaec"
+  integrity sha512-wupvfmtbqRJzjCm1H2diy7wo31Gn1OzvqoxCfQuKM9eSecogzP0WTlrjdq7cf7jgSO2ZX6hxwgRPR8Wt7FA22g==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -494,10 +491,10 @@
   resolved "https://registry.yarnpkg.com/@types/pino-std-serializers/-/pino-std-serializers-2.4.0.tgz#8cad99175cb79c2448f7455a2d32fb3fde29579c"
   integrity sha512-eAdu+NW1IkCdmp85SnhyKha+OOREQMT9lXaoICQxa7bhSauRiLzu3WSNt9Mf2piuJvWeXF/G0hGWHr63xNpIRA==
 
-"@types/pino@^5.8.10":
-  version "5.8.10"
-  resolved "https://registry.yarnpkg.com/@types/pino/-/pino-5.8.10.tgz#42061f8ca77327f97841ac673987d64c6ce8b3f7"
-  integrity sha512-pw9ZxNyeVcVwSZJNCcpFz9RKNi8Ymv76hbwsEzrxZOAxM/EV8TjMdQXcpJ3sBzlFL2WSZ9HGCFt2PMSQjV98ug==
+"@types/pino@^5.14.0", "@types/pino@^5.8.10":
+  version "5.15.1"
+  resolved "https://registry.yarnpkg.com/@types/pino/-/pino-5.15.1.tgz#1d7bfdecbdcb64ec63a672be9bb9524b323f96e4"
+  integrity sha512-skJZ2VBHUva/dF4b2/3zOYVOZLyeaYT7wtPyf8+aoh0VuqfW8JO7PK9oJY8yRZVkN4K7RDdA5UFuH0QbbENZaw==
   dependencies:
     "@types/node" "*"
     "@types/pino-std-serializers" "*"
@@ -537,14 +534,7 @@
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
 
-"@types/uuid@^3.4.5":
-  version "3.4.5"
-  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.5.tgz#d4dc10785b497a1474eae0ba7f0cb09c0ddfd6eb"
-  integrity sha512-MNL15wC3EKyw1VLF+RoVO4hJJdk9t/Hlv3rt1OL65Qvuadm4BYo6g9ZJQqoq7X8NBFSsQXgAujWciovh2lpVjA==
-  dependencies:
-    "@types/node" "*"
-
-"@types/uuid@^3.4.6":
+"@types/uuid@^3.4.5", "@types/uuid@^3.4.6":
   version "3.4.6"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.6.tgz#d2c4c48eb85a757bf2927f75f939942d521e3016"
   integrity sha512-cCdlC/1kGEZdEglzOieLDYBxHsvEOIg7kp/2FYyVR9Pxakq+Qf/inL3RKQ+PA8gOlI/NnL+fXmQH12nwcGzsHw==
@@ -929,9 +919,9 @@ bitsyntax@~0.1.0:
     safe-buffer "~5.1.2"
 
 bluebird@^3.5.2:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.1.tgz#df70e302b471d7473489acf26a93d63b53f874de"
-  integrity sha512-DdmyoGCleJnkbp3nkbxTLJ18rjDsE4yCggEwKNXkeV123sPNfOCYeDoeuOY+F2FrSjO1YXcTU+dsy96KMy+gcg==
+  version "3.7.2"
+  resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
+  integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
 
 body-parser@1.19.0:
   version "1.19.0"
