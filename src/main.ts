@@ -1,11 +1,11 @@
 import * as express from 'express';
 import { Express, Request, Response } from 'express';
+import { EventConfig } from '@libero/event-bus';
 import { InfraLogger as logger } from './logger';
 import { ProfilesService } from './repo/profiles';
-import { HealthCheck, Authenticate } from './use-cases';
+import { HealthCheck, Authenticate, GetCurrentUser } from './use-cases';
 import { setupEventBus } from './event-bus';
 import config from './config';
-import { EventConfig } from '@libero/event-bus';
 
 const init = async (): Promise<void> => {
     logger.info('Starting service');
@@ -29,6 +29,7 @@ const init = async (): Promise<void> => {
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
     app.get('/authenticate/:token?', Authenticate(config, profilesConnector, eventBus));
+    app.get('/current-user', GetCurrentUser(config));
 
     app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));
 };
