@@ -4,8 +4,8 @@ import { encode, decodeJournalToken } from '../jwt';
 import { ProfilesRepo } from '../repo/profiles';
 import { v4 } from 'uuid';
 import { UserIdentity } from '@libero/auth-token';
-import { Event, EventBus } from '@libero/event-bus';
-import { UserLoggedInPayload, LiberoEventType } from '@libero/event-types';
+import { RabbitEventBus } from '@libero/event-bus';
+import { LiberoEventType, UserLoggedInEvent } from '@libero/event-types';
 import { Config } from '../config';
 
 // This is the endpoint that does the actual token exchange/user lookup and signing the output token
@@ -19,7 +19,7 @@ import { Config } from '../config';
 //   "new-session": true
 // };
 
-export const Authenticate = (config: Config, profilesService: ProfilesRepo, eventBus: EventBus) => async (
+export const Authenticate = (config: Config, profilesService: ProfilesRepo, eventBus: RabbitEventBus) => async (
     req: Request,
     res: Response,
 ): Promise<void> => {
@@ -97,13 +97,10 @@ export const Authenticate = (config: Config, profilesService: ProfilesRepo, even
     const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
 
     // send audit logged in message
-    const auditEvent: Event<UserLoggedInPayload> = {
+    const auditEvent: UserLoggedInEvent = {
         id: v4(),
         created: new Date(),
         eventType: LiberoEventType.userLoggedInIdentifier,
-        context: {
-            source: 'continuum-auth',
-        },
         payload: {
             userId: payload.identity.user_id,
             result: 'authorized',
