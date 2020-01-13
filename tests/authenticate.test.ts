@@ -2,12 +2,14 @@
 import axios from 'axios';
 import { readFileSync } from 'fs';
 import { sign, verify } from 'jsonwebtoken';
+import { RabbitEventBus } from '@libero/event-bus';
+import { LiberoEventType } from '@libero/event-types';
 
 const configPath = `${__dirname}/config/continuum-auth.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
 
 // time in ms from now the mock journal token will be valid for
-const MOCK_TOKEN_EXP = 20000
+const MOCK_TOKEN_EXP = 20000;
 
 describe('Authenticate', (): void => {
     // happy path
@@ -26,35 +28,35 @@ describe('Authenticate', (): void => {
         expect.assertions(8);
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`).then(res => {
             expect(res.status).toBe(200);
-            expect(res.data).toBe('Redirect reached successfully')
+            expect(res.data).toBe('Redirect reached successfully');
             const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
             expect(redirectUrl).toBe(config.login_return_url);
             const verifiedReturnToken = verify(returnedToken, config.authentication_jwt_secret);
 
-            const expectedPayload =     {
-                "token_version": "0.1-alpha",
-                "identity": {
-                    "external": [
+            const expectedPayload = {
+                token_version: '0.1-alpha',
+                identity: {
+                    external: [
                         {
-                            "id": "TEST_ID",
-                            "domain": "elife-profiles"
+                            id: 'TEST_ID',
+                            domain: 'elife-profiles',
                         },
                         {
-                            "id": "0000-0001-2345-6789",
-                            "domain": "orcid"
-                        }
-                    ]
+                            id: '0000-0001-2345-6789',
+                            domain: 'orcid',
+                        },
+                    ],
                 },
-                "roles": [
+                roles: [
                     {
-                        "journal": "elife",
-                        "kind": "author"
-                    }
+                        journal: 'elife',
+                        kind: 'author',
+                    },
                 ],
-                "meta": {
-                    "email": "test@example.com"
+                meta: {
+                    email: 'test@example.com',
                 },
-                "iss": "continuum-auth"
+                iss: 'continuum-auth',
             };
 
             expect(typeof verifiedReturnToken['iat']).toBe('number');
@@ -74,18 +76,52 @@ describe('Authenticate', (): void => {
     });
 
     it('rejects request when no token passed', async (): Promise<void> => {
-        expect.assertions(2)
-        await axios.get('http://localhost:3001/authenticate').catch(({response}) => {
+        expect.assertions(2);
+        await axios.get('http://localhost:3001/authenticate').catch(({ response }) => {
             expect(response.status).toBe(500);
-            expect(response.data).toEqual({ ok: false, msg: 'No token' })
+            expect(response.data).toEqual({ ok: false, msg: 'No token' });
         });
     });
 
     it('rejects request when invalid token passed', async (): Promise<void> => {
-        expect.assertions(2)
-        await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({response}) => {
+        expect.assertions(2);
+        await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({ response }) => {
             expect(response.status).toBe(500);
-            expect(response.data).toEqual({ ok: false, msg: 'Invalid token' })
+            expect(response.data).toEqual({ ok: false, msg: 'Invalid token' });
         });
+    });
+
+    it.only('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<
+        void
+    > => {
+        const url = `amqp://${config.rabbitmq_url}`;
+        const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
+        const mockJournalToken = sign(
+            {
+                iss: 'journal--prod',
+                iat: 1567503944,
+                exp: new Date().getTime() + MOCK_TOKEN_EXP,
+                id: 'TEST_ID',
+                'new-session': true,
+            },
+            config.continuum_jwt_secret,
+        );
+
+        await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
+
+        let payload;
+        eventBus.subscribe(
+            LiberoEventType.userLoggedInIdentifier,
+            (event): Promise<boolean> => {
+                payload = event.payload;
+                return Promise.resolve(true);
+            },
+        );
+
+        setTimeout(async () => {
+            expect(payload.result).toBe('authorized');
+            await eventBus.destroy();
+            done();            
+        }, 1000);
     });
 });
