@@ -91,9 +91,7 @@ describe('Authenticate', (): void => {
         });
     });
 
-    it.only('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<
-        void
-    > => {
+    it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
         const url = `amqp://${config.rabbitmq_url}`;
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
         const mockJournalToken = sign(
