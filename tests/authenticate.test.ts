@@ -118,10 +118,13 @@ describe('Authenticate', (): void => {
             },
         );
 
-        setTimeout(async () => {
-            expect(payload.result).toBe('authorized');
-            await eventBus.destroy();
-            done();            
+        const intervalID = setInterval(async () => {
+            if (payload) {
+                expect(payload.result).toBe('authorized');
+                await eventBus.destroy();
+                clearInterval(intervalID);
+                done();
+            }
         }, 1000);
     });
 });
