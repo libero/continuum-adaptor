@@ -120,6 +120,6 @@ describe('Authenticate', (): void => {
             expect(payload.result).toBe('authorized');
             await eventBus.destroy();
             done();
-        }, 1000);
+        }, 2000);
     });
 });
