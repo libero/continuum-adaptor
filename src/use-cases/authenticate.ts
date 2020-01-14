@@ -7,6 +7,7 @@ import { UserIdentity } from '@libero/auth-token';
 import { RabbitEventBus } from '@libero/event-bus';
 import { UserLoggedInEvent, UserLoggedInPayload } from '@libero/event-types';
 import { Config } from '../config';
+import { IdentityRepository } from 'domain/types';
 
 // This is the endpoint that does the actual token exchange/user lookup and signing the output token
 // And yeah, I know the controller/usecase code shouldn't be mixed but idec, we can refactor it at some point
@@ -19,10 +20,12 @@ import { Config } from '../config';
 //   "new-session": true
 // };
 
-export const Authenticate = (config: Config, profilesService: ProfilesRepo, eventBus: RabbitEventBus) => async (
-    req: Request,
-    res: Response,
-): Promise<void> => {
+export const Authenticate = (
+    config: Config,
+    profilesService: ProfilesRepo,
+    userService: IdentityRepository,
+    eventBus: RabbitEventBus,
+) => async (req: Request, res: Response): Promise<void> => {
     if (!req.params.token) {
         logger.warn('noTokenProvided');
         res.status(500).json({ ok: false, msg: 'No token' });
@@ -54,8 +57,9 @@ export const Authenticate = (config: Config, profilesService: ProfilesRepo, even
     }
     const profile = maybeProfile.get();
 
-    // TODO: Calculate user-role
+    const user = await userService.findOrCreateUser(id);
 
+    // TODO: Calculate user-role
     const identity = {
         // we need this to be the libero user id
         // at the moment we just generate any old one because we don't have
