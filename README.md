@@ -1,12 +1,29 @@
 # continuum-auth
 
-## Setup
+## Configuration
 
-Copy the .env.example file
+Copy the example config file
 
 ```sh
-cp .env.example .env
+cp config/config.example.json config/config.json
 ```
+
+## Setup
+
+Create a database called 'continuum-auth', then run the migrations:
+
+```sh
+yarn migrate run
+```
+
+To rollback one migration:
+```sh
+yarn migrate rollback
+```
+
+Migration status
+```sh
+yarn migrate status
 
 ## Overview
 
