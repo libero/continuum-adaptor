@@ -3,7 +3,7 @@ import axios from 'axios';
 import { readFileSync } from 'fs';
 import { sign, verify } from 'jsonwebtoken';
 import { RabbitEventBus } from '@libero/event-bus';
-import { LiberoEventType } from '@libero/event-types';
+import { LiberoEventType, UserLoggedInPayload } from '@libero/event-types';
 
 const configPath = `${__dirname}/config/continuum-auth.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -91,7 +91,8 @@ describe('Authenticate', (): void => {
         });
     });
 
-    it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
+    it('sends the apropriate message to the message bus when user is authenticated', async (): Promise<void> => {
+        jest.setTimeout(30000);
         const url = 'amqp://localhost';
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
         const mockJournalToken = sign(
@@ -107,19 +108,18 @@ describe('Authenticate', (): void => {
 
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
 
-        let payload;
-        eventBus.subscribe(
-            LiberoEventType.userLoggedInIdentifier,
-            (event): Promise<boolean> => {
-                payload = event.payload;
-                return Promise.resolve(true);
-            },
+        const testPromise = new Promise(async resolve =>
+            eventBus.subscribe(
+                LiberoEventType.userLoggedInIdentifier,
+                (event): Promise<boolean> => {
+                    resolve(event.payload);
+                    return Promise.resolve(true);
+                },
+            ),
         );
-
-        setTimeout(async () => {
+        await testPromise.then(async (payload: UserLoggedInPayload) => {
             expect(payload.result).toBe('authorized');
             await eventBus.destroy();
-            done();
-        }, 2000);
+        });
     });
 });
