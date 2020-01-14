@@ -113,6 +113,7 @@ describe('Authenticate', (): void => {
         eventBus.subscribe(
             LiberoEventType.userLoggedInIdentifier,
             (event): Promise<boolean> => {
+                console.log('event recieved');
                 payload = event.payload;
                 return Promise.resolve(true);
             },
