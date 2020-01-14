@@ -92,7 +92,7 @@ describe('Authenticate', (): void => {
     });
 
     it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
-        const url = `amqp://${config.rabbitmq_url}`;
+        const url = 'amqp://localhost';
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
         const mockJournalToken = sign(
             {
@@ -111,19 +111,15 @@ describe('Authenticate', (): void => {
         eventBus.subscribe(
             LiberoEventType.userLoggedInIdentifier,
             (event): Promise<boolean> => {
-                console.log('event recieved');
                 payload = event.payload;
                 return Promise.resolve(true);
             },
         );
 
-        const intervalID = setInterval(async () => {
-            if (payload) {
-                expect(payload.result).toBe('authorized');
-                await eventBus.destroy();
-                clearInterval(intervalID);
-                done();
-            }
+        setTimeout(async () => {
+            expect(payload.result).toBe('authorized');
+            await eventBus.destroy();
+            done();
         }, 1000);
     });
 });
