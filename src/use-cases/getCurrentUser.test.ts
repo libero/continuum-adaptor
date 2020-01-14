@@ -5,6 +5,7 @@ import { Option } from 'funfix';
 import { UserIdentity } from '@libero/auth-token';
 import { Config } from '../config';
 import { GetCurrentUser } from './getCurrentUser';
+import { Config as KnexConfig } from 'knex';
 
 jest.mock('../logger');
 
@@ -16,6 +17,7 @@ const config: Config = {
     authentication_jwt_secret: 'ca-secret',
     continuum_jwt_secret: 'continuum-secret',
     continuum_api_url: 'somewhere',
+    knex: {} as KnexConfig,
 };
 
 describe('Get Current User Handler', (): void => {

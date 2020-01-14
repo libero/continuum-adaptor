@@ -6,6 +6,7 @@ import { verify } from 'jsonwebtoken';
 import * as jwt from '../jwt';
 import { Config } from '../config';
 import { LiberoEventType } from '@libero/event-types';
+import { Config as KnexConfig } from 'knex';
 
 jest.mock('../logger');
 jest.mock('fs', (): object => ({
@@ -20,6 +21,7 @@ const config: Config = {
     authentication_jwt_secret: 'ca-secret',
     continuum_jwt_secret: 'continuum-secret',
     continuum_api_url: 'somewhere',
+    knex: {} as KnexConfig,
 };
 
 describe('Authenticate Handler', () => {

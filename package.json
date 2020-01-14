@@ -7,6 +7,7 @@
         "test": "jest ./src",
         "build": "tsc",
         "lint": "eslint --ext .js,.ts,.tsx .",
+        "migrate": "ts-node src/migrate.ts",
         "prettier": "prettier --write '{src,tests}/**/*ts'",
         "start:dev": "CONFIG_PATH=tests/config/continuum-auth.json nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node' src/main.ts | pino-pretty",
         "test:integration": "jest ./tests/"
@@ -27,15 +28,18 @@
         "@libero/auth-token": "^0.1.1",
         "@libero/event-bus": "^0.1.3",
         "@libero/event-types": "^0.1.3",
+        "@libero/migrator": "^0.1.0",
         "express": "^4.17.1",
         "funfix": "^7.0.1",
         "jsonwebtoken": "^8.5.1",
         "node-fetch": "^2.6.0",
+        "pg": "^7.17.1",
         "pino": "^5.13.2",
         "uuid": "^3.3.3"
     },
     "devDependencies": {
         "@types/express": "^4.17.2",
+        "@types/knex": "^0.16.1",
         "@types/jest": "^24.0.23",
         "@types/jsonwebtoken": "^8.3.5",
         "@types/node-fetch": "^2.5.3",
