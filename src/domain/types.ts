@@ -2,20 +2,21 @@ export interface User {
     id: string;
     created: Date;
     updated: Date;
-    defaultIdentity: string;
+    defaultIdentity: string; // type default elife
 }
 
+// User can have many identities
 export interface Identity {
     id: string;
     userId: string;
     created: Date;
     updated: Date;
     type: string;
-    indentifier: string;
+    indentifier: string; // profile ID
     displayName: string;
     email: string;
 }
 
-export interface IdentityRepository {
-    findOrCreateUser(profileId: string): Promise<User>;
+export interface UserRepository {
+    findOrCreateUserWithProfileId(profileId: string): Promise<User>;
 }

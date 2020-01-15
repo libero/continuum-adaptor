@@ -1,22 +1,23 @@
 // Use knex to connect to a database and write stuff to the table
-import { IdentityRepository, Identity, User } from '../domain/types';
+import { UserRepository, Identity, User } from '../domain/types';
 import * as Knex from 'knex';
 
-export class KnexAuditRepository implements IdentityRepository {
+export class KnexUserRepository implements UserRepository {
     public constructor(private readonly knex: Knex<{}, unknown[]>) {}
     private async findIdentity(profileId: string): Promise<Identity> {
-        // 'id',
-        // 'created',
-        // 'updated',
-        // 'type',
-        // 'indentifier',
-        // 'display_nname as displayName',
-        // 'email',
         const identity = await this.knex
-            .first('user_id as userId')
+            .first(
+                'user_id as userId',
+                'id',
+                'created',
+                'updated',
+                'type',
+                'indentifier',
+                'display_nname as displayName',
+                'email',
+            )
             .from<Identity>('identity')
             .where('indentifier', profileId);
-
         return identity;
     }
 
@@ -31,19 +32,24 @@ export class KnexAuditRepository implements IdentityRepository {
         const userIds = await this.knex
             .insert(
                 {
-                    default_identity: profileId,
+                    default_identity: 'elife',
                 },
                 'id',
             )
             .into('user');
         const userId: string = userIds[0];
-        await this.knex.insert({
-            user_id: userId,
-            indentifier: profileId,
-        });
+        // TODO: ensure unique constraint on userId and type
+        await this.knex
+            .insert({
+                user_id: userId,
+                indentifier: profileId,
+                type: 'elife',
+            })
+            .into('identity');
         return userId;
     }
-    public async findOrCreateUser(profileId: string): Promise<User> {
+
+    public async findOrCreateUserWithProfileId(profileId: string): Promise<User> {
         const identity = await this.findIdentity(profileId);
         let userId = identity && identity.userId;
         if (identity === null) {
