@@ -3,7 +3,7 @@ import axios from 'axios';
 import { readFileSync } from 'fs';
 import { sign, verify } from 'jsonwebtoken';
 
-const configPath = `${__dirname}/config/continuum-auth.json`;
+const configPath = `${__dirname}/config/continuum-adaptor.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
 
 // time in ms from now the mock journal token will be valid for
@@ -23,58 +23,34 @@ describe('Authenticate', (): void => {
             config.continuum_jwt_secret,
         );
 
-        expect.assertions(8);
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`).then(res => {
             expect(res.status).toBe(200);
             expect(res.data).toBe('Redirect reached successfully')
             const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
             expect(redirectUrl).toBe(config.login_return_url);
-            const verifiedReturnToken = verify(returnedToken, config.authentication_jwt_secret);
+            const decoded = verify(returnedToken, config.authentication_jwt_secret);
 
-            const expectedPayload =     {
-                "token_version": "0.1-alpha",
-                "identity": {
-                    "external": [
-                        {
-                            "id": "TEST_ID",
-                            "domain": "elife-profiles"
-                        },
-                        {
-                            "id": "0000-0001-2345-6789",
-                            "domain": "orcid"
-                        }
-                    ]
-                },
-                "roles": [
-                    {
-                        "journal": "elife",
-                        "kind": "author"
-                    }
-                ],
-                "meta": {
-                    "email": "test@example.com"
-                },
-                "iss": "continuum-auth"
+            const expectedPayload = {
+                iss: 'continuum-auth',
+                issuer: 'libero',
             };
+            const currentTimestamp = new Date().getTime() / 1000;
 
-            expect(typeof verifiedReturnToken['iat']).toBe('number');
-            delete verifiedReturnToken['iat'];
+            expect(typeof decoded['iat']).toBe('number');
+            expect(decoded['iat']).toBeLessThan(currentTimestamp);
 
-            expect(typeof verifiedReturnToken['exp']).toBe('number');
-            delete verifiedReturnToken['exp'];
+            expect(typeof decoded['exp']).toBe('number');
+            expect(decoded['exp']).toBeGreaterThan(currentTimestamp);
 
-            expect(typeof verifiedReturnToken['identity']['user_id']).toBe('string');
-            delete verifiedReturnToken['identity']['user_id'];
+            expect(decoded['sub']).toHaveLength(36);
+            expect(typeof decoded['jti']).toBe('string');
+            expect(decoded['jti']).toHaveLength(36);
 
-            expect(typeof verifiedReturnToken['token_id']).toBe('string');
-            delete verifiedReturnToken['token_id'];
-
-            expect(verifiedReturnToken).toStrictEqual(expectedPayload);
+            expect(decoded).toMatchObject(expectedPayload);
         });
     });
 
     it('rejects request when no token passed', async (): Promise<void> => {
-        expect.assertions(2)
         await axios.get('http://localhost:3001/authenticate').catch(({response}) => {
             expect(response.status).toBe(500);
             expect(response.data).toEqual({ ok: false, msg: 'No token' })
@@ -82,7 +58,6 @@ describe('Authenticate', (): void => {
     });
 
     it('rejects request when invalid token passed', async (): Promise<void> => {
-        expect.assertions(2)
         await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({response}) => {
             expect(response.status).toBe(500);
             expect(response.data).toEqual({ ok: false, msg: 'Invalid token' })

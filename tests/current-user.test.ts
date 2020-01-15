@@ -4,7 +4,7 @@ import { readFileSync } from 'fs';
 import { v4 } from 'uuid';
 import { sign } from 'jsonwebtoken';
 
-const configPath = `${__dirname}/config/continuum-auth.json`;
+const configPath = `${__dirname}/config/continuum-adaptor.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
 
 describe('GetCurrentUser', (): void => {

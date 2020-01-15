@@ -8,7 +8,7 @@ services:
     environment: 
       CONFIG_PATH: /etc/reviewer/config.json
     volumes:
-      - ./tests/config/continuum-auth.json:/etc/reviewer/config.json
+      - ./tests/config/continuum-adaptor.json:/etc/reviewer/config.json
     healthcheck:
       test: 'echo -e "GET /health\n\n" | nc localhost ${AUTHENTICATION_PORT:-3001}'
       interval: 10s
@@ -42,6 +42,17 @@ services:
       - "5672:5672"
     healthcheck:
       test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 2s
+      timeout: 30s
+      retries: 10
+
+  postgres:
+    image: postgres:11
+    container_name: test_postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 2s
       timeout: 30s
       retries: 10
