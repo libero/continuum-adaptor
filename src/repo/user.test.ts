@@ -27,4 +27,25 @@ describe('User repository', () => {
         expect(mockBLAH.into.mock.calls[1]).toEqual(['identity']);
         expect(mockBLAH.insert).toHaveBeenCalledTimes(2);
     });
+
+    it('should retrieve a user if present', async () => {
+        const mockBLAH = {
+            first: jest.fn(),
+            from: jest.fn(),
+            where: jest.fn(),
+            insert: jest.fn(),
+            into: jest.fn(),
+        };
+        mockBLAH.first.mockImplementation(() => mockBLAH);
+        mockBLAH.from.mockImplementation(() => mockBLAH);
+        mockBLAH.where.mockImplementation(() => ({ userId: '123' }));
+
+        const mockKnex = (mockBLAH as unknown) as Knex;
+        const userRepository = new KnexUserRepository(mockKnex);
+
+        await userRepository.findOrCreateUserWithProfileId('profile');
+
+        expect(mockBLAH.insert).toHaveBeenCalledTimes(0);
+        expect(mockBLAH.where.mock.calls[1]).toEqual(['id', '123']);
+    });
 });

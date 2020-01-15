@@ -28,7 +28,7 @@ export class KnexUserRepository implements UserRepository {
             .where('id', userId);
     }
 
-    private async createUserAndIdentity(profileId: string): Promise<string> {
+    private async createUser(): Promise<string> {
         const userIds = await this.knex
             .insert(
                 {
@@ -37,23 +37,27 @@ export class KnexUserRepository implements UserRepository {
                 'id',
             )
             .into('user');
-        const userId: string = userIds[0];
+
+        return userIds[0];
+    }
+
+    private async createIdentity(profileId: string, userId: string): Promise<void> {
         // TODO: ensure unique constraint on userId and type
-        await this.knex
+        return await this.knex
             .insert({
                 user_id: userId,
                 indentifier: profileId,
                 type: 'elife',
             })
             .into('identity');
-        return userId;
     }
 
     public async findOrCreateUserWithProfileId(profileId: string): Promise<User> {
         const identity = await this.findIdentity(profileId);
         let userId = identity && identity.userId;
         if (identity === null) {
-            userId = await this.createUserAndIdentity(profileId);
+            userId = await this.createUser();
+            await this.createIdentity(profileId, userId);
         }
         return await this.findUser(userId);
     }
