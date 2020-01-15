@@ -22,7 +22,7 @@ export class KnexUserRepository implements UserRepository {
     }
 
     private async findUser(userId: string): Promise<User> {
-        return this.knex
+        return await this.knex
             .first('id', 'created', 'updated', 'default_identity as defaultIdentity')
             .from<User>('user')
             .where('id', userId);
