@@ -92,7 +92,7 @@ describe('Authenticate', (): void => {
     });
 
     it('sends the apropriate message to the message bus when user is authenticated', async (): Promise<void> => {
-        jest.setTimeout(30000);
+        jest.setTimeout(60000);
         const url = 'amqp://localhost';
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
         const mockJournalToken = sign(
