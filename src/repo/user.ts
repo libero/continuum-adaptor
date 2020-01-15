@@ -1,11 +1,13 @@
 // Use knex to connect to a database and write stuff to the table
-import { UserRepository, Identity, User } from '../domain/types';
 import * as Knex from 'knex';
+import { v4 } from 'uuid';
+import { UserRepository, Identity, User } from '../domain/types';
 
 export class KnexUserRepository implements UserRepository {
     public constructor(private readonly knex: Knex<{}, unknown[]>) {}
     private async findIdentity(profileId: string): Promise<Identity> {
         const identity = await this.knex
+            .withSchema('public')
             .first(
                 'user_id as userId',
                 'id',
@@ -13,16 +15,18 @@ export class KnexUserRepository implements UserRepository {
                 'updated',
                 'type',
                 'indentifier',
-                'display_nname as displayName',
+                'display_name as displayName',
                 'email',
             )
             .from<Identity>('identity')
             .where('indentifier', profileId);
-        return identity;
+
+        return typeof identity === 'undefined' ? null : identity;
     }
 
     private async findUser(userId: string): Promise<User> {
         return await this.knex
+            .withSchema('public')
             .first('id', 'created', 'updated', 'default_identity as defaultIdentity')
             .from<User>('user')
             .where('id', userId);
@@ -30,9 +34,11 @@ export class KnexUserRepository implements UserRepository {
 
     private async createUser(): Promise<string> {
         const userIds = await this.knex
+            .withSchema('public')
             .insert(
                 {
                     default_identity: 'elife',
+                    id: v4(),
                 },
                 'id',
             )
@@ -44,10 +50,12 @@ export class KnexUserRepository implements UserRepository {
     private async createIdentity(profileId: string, userId: string): Promise<void> {
         // TODO: ensure unique constraint on userId and type
         return await this.knex
+            .withSchema('public')
             .insert({
                 user_id: userId,
                 indentifier: profileId,
                 type: 'elife',
+                id: v4(),
             })
             .into('identity');
     }

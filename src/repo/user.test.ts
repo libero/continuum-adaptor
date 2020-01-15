@@ -4,6 +4,7 @@ import { KnexUserRepository } from './user';
 describe('User repository', () => {
     it('should insert a new user and identity if not present', async () => {
         const mockBLAH = {
+            withSchema: jest.fn(),
             first: jest.fn(),
             from: jest.fn(),
             where: jest.fn(),
@@ -12,6 +13,7 @@ describe('User repository', () => {
         };
         const mockKnex = (mockBLAH as unknown) as Knex;
 
+        mockBLAH.withSchema.mockImplementation(() => mockBLAH);
         mockBLAH.first.mockImplementation(() => mockBLAH);
         mockBLAH.from.mockImplementation(() => mockBLAH);
         mockBLAH.insert.mockImplementation(() => mockBLAH);
@@ -22,7 +24,8 @@ describe('User repository', () => {
 
         await userRepository.findOrCreateUserWithProfileId('profile');
 
-        expect(mockBLAH.insert.mock.calls[0]).toEqual([{ default_identity: 'elife' }, 'id']);
+        expect(mockBLAH.insert.mock.calls[0][0].default_identity).toEqual('elife');
+        expect(mockBLAH.insert.mock.calls[0][0].id).toHaveLength(36);
         expect(mockBLAH.into.mock.calls[0]).toEqual(['user']);
         expect(mockBLAH.into.mock.calls[1]).toEqual(['identity']);
         expect(mockBLAH.insert).toHaveBeenCalledTimes(2);
@@ -30,12 +33,14 @@ describe('User repository', () => {
 
     it('should retrieve a user if present', async () => {
         const mockBLAH = {
+            withSchema: jest.fn(),
             first: jest.fn(),
             from: jest.fn(),
             where: jest.fn(),
             insert: jest.fn(),
             into: jest.fn(),
         };
+        mockBLAH.withSchema.mockImplementation(() => mockBLAH);
         mockBLAH.first.mockImplementation(() => mockBLAH);
         mockBLAH.from.mockImplementation(() => mockBLAH);
         mockBLAH.where.mockImplementation(() => ({ userId: '123' }));

@@ -19,10 +19,12 @@ test: get_deps
 test_integration:
 	- ${DOCKER_COMPOSE_TEST} down
 	${DOCKER_COMPOSE_TEST} up -d
+	./.scripts/docker/wait-healthy.sh test_postgres 20
 	./.scripts/docker/wait-healthy.sh test_rabbitmq 20
 	./.scripts/docker/wait-healthy.sh test_reviewer_mocks 60
 	./.scripts/docker/wait-healthy.sh test_continuum_auth 60
-	CONFIG_PATH=./tests/config/continuum-auth.json yarn test:integration
+	${DOCKER_COMPOSE_TEST} exec continuum-auth node dist/migrate.js run
+	CONFIG_PATH=./tests/config/continuum-adaptor.json yarn test:integration
 	- ${DOCKER_COMPOSE_TEST} down
 	
 build:
