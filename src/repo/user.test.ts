@@ -3,7 +3,7 @@ import { KnexUserRepository } from './user';
 
 describe('User repository', () => {
     it('should insert a new user and identity if not present', async () => {
-        const mockBLAH = {
+        const mockQueryBuilder = {
             withSchema: jest.fn(),
             first: jest.fn(),
             from: jest.fn(),
@@ -11,28 +11,28 @@ describe('User repository', () => {
             insert: jest.fn(),
             into: jest.fn(),
         };
-        const mockKnex = (mockBLAH as unknown) as Knex;
+        const mockKnex = (mockQueryBuilder as unknown) as Knex;
 
-        mockBLAH.withSchema.mockImplementation(() => mockBLAH);
-        mockBLAH.first.mockImplementation(() => mockBLAH);
-        mockBLAH.from.mockImplementation(() => mockBLAH);
-        mockBLAH.insert.mockImplementation(() => mockBLAH);
-        mockBLAH.where.mockImplementation(() => null);
-        mockBLAH.into.mockImplementationOnce(() => ['123']);
+        mockQueryBuilder.withSchema.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.first.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.from.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.insert.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.where.mockImplementation(() => null);
+        mockQueryBuilder.into.mockImplementationOnce(() => ['123']);
 
         const userRepository = new KnexUserRepository(mockKnex);
 
         await userRepository.findOrCreateUserWithProfileId('profile');
 
-        expect(mockBLAH.insert.mock.calls[0][0].default_identity).toEqual('elife');
-        expect(mockBLAH.insert.mock.calls[0][0].id).toHaveLength(36);
-        expect(mockBLAH.into.mock.calls[0]).toEqual(['user']);
-        expect(mockBLAH.into.mock.calls[1]).toEqual(['identity']);
-        expect(mockBLAH.insert).toHaveBeenCalledTimes(2);
+        expect(mockQueryBuilder.insert.mock.calls[0][0].default_identity).toEqual('elife');
+        expect(mockQueryBuilder.insert.mock.calls[0][0].id).toHaveLength(36);
+        expect(mockQueryBuilder.into.mock.calls[0]).toEqual(['user']);
+        expect(mockQueryBuilder.into.mock.calls[1]).toEqual(['identity']);
+        expect(mockQueryBuilder.insert).toHaveBeenCalledTimes(2);
     });
 
     it('should retrieve a user if present', async () => {
-        const mockBLAH = {
+        const mockQueryBuilder = {
             withSchema: jest.fn(),
             first: jest.fn(),
             from: jest.fn(),
@@ -40,17 +40,17 @@ describe('User repository', () => {
             insert: jest.fn(),
             into: jest.fn(),
         };
-        mockBLAH.withSchema.mockImplementation(() => mockBLAH);
-        mockBLAH.first.mockImplementation(() => mockBLAH);
-        mockBLAH.from.mockImplementation(() => mockBLAH);
-        mockBLAH.where.mockImplementation(() => ({ userId: '123' }));
+        mockQueryBuilder.withSchema.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.first.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.from.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.where.mockImplementation(() => ({ userId: '123' }));
 
-        const mockKnex = (mockBLAH as unknown) as Knex;
+        const mockKnex = (mockQueryBuilder as unknown) as Knex;
         const userRepository = new KnexUserRepository(mockKnex);
 
         await userRepository.findOrCreateUserWithProfileId('profile');
 
-        expect(mockBLAH.insert).toHaveBeenCalledTimes(0);
-        expect(mockBLAH.where.mock.calls[1]).toEqual(['id', '123']);
+        expect(mockQueryBuilder.insert).toHaveBeenCalledTimes(0);
+        expect(mockQueryBuilder.where.mock.calls[1]).toEqual(['id', '123']);
     });
 });

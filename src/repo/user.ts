@@ -14,12 +14,12 @@ export class KnexUserRepository implements UserRepository {
                 'created',
                 'updated',
                 'type',
-                'indentifier',
+                'identifier',
                 'display_name as displayName',
                 'email',
             )
             .from<Identity>('identity')
-            .where('indentifier', profileId);
+            .where('identifier', profileId);
 
         return typeof identity === 'undefined' ? null : identity;
     }
@@ -53,7 +53,7 @@ export class KnexUserRepository implements UserRepository {
             .withSchema('public')
             .insert({
                 user_id: userId,
-                indentifier: profileId,
+                identifier: profileId,
                 type: 'elife',
                 id: v4(),
             })

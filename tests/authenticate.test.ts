@@ -11,7 +11,7 @@ const MOCK_TOKEN_EXP = 20000
 
 describe('Authenticate', (): void => {
     // happy path
-    it.only('authenticates a user session token', async (): Promise<void> => {
+    it('authenticates a user session token', async (): Promise<void> => {
         const mockJournalToken = sign(
             {
                 iss: 'journal--prod',

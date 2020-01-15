@@ -12,7 +12,7 @@ export interface Identity {
     created: Date;
     updated: Date;
     type: string;
-    indentifier: string; // profile ID
+    identifier: string; // profile ID
     displayName: string;
     email: string;
 }
