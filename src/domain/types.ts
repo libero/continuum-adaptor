@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export interface User {
     id: string;
     created: Date;
@@ -20,3 +22,7 @@ export interface Identity {
 export interface UserRepository {
     findOrCreateUserWithProfileId(profileId: string): Promise<User>;
 }
+
+export type CustomRequest = Request & {
+    requestTag: string;
+};
