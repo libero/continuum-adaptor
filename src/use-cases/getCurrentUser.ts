@@ -2,18 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import { Unauthorized } from 'http-errors';
 import { v4 } from 'uuid';
 import { UserIdentity } from '@libero/auth-token';
-import { decodeToken } from '../jwt';
+import { decodeToken, LiberoAuthToken } from '../jwt';
 import { Config } from '../config';
 import { ProfilesRepo } from '../repo/profiles';
 import { PeopleRepository } from '../repo/people';
 import { UserRepository } from 'domain/types';
-
-// @todo: put this somewhere else
-interface AuthToken {
-    sub: string;
-    issuer: string;
-    jti: string;
-}
 
 export const GetCurrentUser = (
     config: Config,
@@ -40,7 +33,7 @@ export const GetCurrentUser = (
             throw new Unauthorized('Invalid token');
         }
 
-        const userId = ((decodedToken.get() as unknown) as AuthToken).sub;
+        const userId = ((decodedToken.get() as unknown) as LiberoAuthToken).sub;
         const user = await userRepo.findUser(userId);
 
         if (!user) {
