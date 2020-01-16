@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
+import { DomainLogger as logger } from '../logger';
+import { HttpError } from 'http-errors';
 
-// TODO: replace any when there is agreement on error handling.
-export default function errorHandler(error: any, req: Request, res: Response, next: NextFunction): Response {
-    const { status = 500, type = 'non-specific-error', msg } = error;
-    console.log('error', { status, type });
-    return res.status(status).send({ msg });
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function errorHandler(error: HttpError, req: Request, res: Response, next: NextFunction): Response {
+    const { status = 500, type = 'non-specific-error', msg, errors = [] } = error;
+    logger.error({ status, type, msg });
+    return res.status(status).send({ msg, errors });
 }

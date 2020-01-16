@@ -1,13 +1,11 @@
-import { Request, Response } from 'express';
-import { DomainLogger as logger } from '../logger';
-import { encode, decodeJournalToken } from '../jwt';
-// import { ProfilesRepo } from '../repo/profiles'; // TODO: is this needed?
+import { Request, Response, NextFunction } from 'express';
 import { v4 } from 'uuid';
-// import { UserIdentity } from '@libero/auth-token'; // TODO: is this needed?
+import { Unauthorized } from 'http-errors';
 import { RabbitEventBus } from '@libero/event-bus';
 import { UserLoggedInEvent, UserLoggedInPayload } from '@libero/event-types';
+import { UserRepository } from '../domain/types';
 import { Config } from '../config';
-import { UserRepository } from 'domain/types';
+import { encode, decodeJournalToken } from '../jwt';
 
 // This is the endpoint that does the actual token exchange/user lookup and signing the output token
 // And yeah, I know the controller/usecase code shouldn't be mixed but idec, we can refactor it at some point
@@ -23,11 +21,10 @@ import { UserRepository } from 'domain/types';
 export const Authenticate = (config: Config, userService: UserRepository, eventBus: RabbitEventBus) => async (
     req: Request,
     res: Response,
+    next: NextFunction,
 ): Promise<void> => {
     if (!req.params.token) {
-        logger.warn('noTokenProvided');
-        res.status(500).json({ ok: false, msg: 'No token' });
-        return;
+        return next(new Unauthorized('No token'));
     }
     const token = req.params['token'];
     // Decode the token that's passed to this endpoint from whatever OAuth provider we go with (I'm guessing ORCiD)
@@ -40,9 +37,7 @@ export const Authenticate = (config: Config, userService: UserRepository, eventB
     const parsedToken = decodeJournalToken(config.continuum_jwt_secret, token);
 
     if (parsedToken.isEmpty()) {
-        logger.warn('Invalid token');
-        res.status(500).json({ ok: false, msg: 'Invalid token' });
-        return;
+        return next(new Unauthorized('Invalid token'));
     }
 
     const profileId = parsedToken.get().id;

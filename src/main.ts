@@ -1,12 +1,13 @@
 import * as express from 'express';
 import { Express, Request, Response } from 'express';
 import { EventConfig } from '@libero/event-bus';
+import * as knex from 'knex';
+import errorHandler from './middleware/error-handler';
 import { InfraLogger as logger } from './logger';
 import { KnexUserRepository } from './repo/user';
 import { HealthCheck, Authenticate, GetCurrentUser } from './use-cases';
 import { setupEventBus } from './event-bus';
 import config from './config';
-import * as knex from 'knex';
 
 const init = async (): Promise<void> => {
     logger.info('Starting service');
@@ -32,6 +33,7 @@ const init = async (): Promise<void> => {
     app.get('/health', HealthCheck());
     app.get('/authenticate/:token?', Authenticate(config, userRepository, eventBus));
     app.get('/current-user', GetCurrentUser(config));
+    app.use(errorHandler);
 
     const server = app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));
     server.on('close', async () => await knexConnection.destroy());
