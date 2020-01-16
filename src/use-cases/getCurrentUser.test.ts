@@ -8,6 +8,7 @@ import { UserIdentity } from '@libero/auth-token';
 import { Config } from '../config';
 import { GetCurrentUser } from './getCurrentUser';
 import { ProfilesRepo } from '../repo/profiles';
+import { PeopleRepository, Person } from '../repo/people';
 import { UserRepository, User, Identity } from '../domain/types';
 
 jest.mock('../logger');
@@ -29,6 +30,7 @@ describe('Get Current User Handler', (): void => {
     let nextFunctionMock;
     let userRepoMock;
     let profilesServiceMock;
+    let peopleServiceMock;
     let handler;
 
     beforeEach((): void => {
@@ -46,6 +48,9 @@ describe('Get Current User Handler', (): void => {
         profilesServiceMock = {
             getProfileById: jest.fn(),
         };
+        peopleServiceMock = {
+            getPersonById: jest.fn(),
+        };
 
         responseMock.status.mockImplementation(() => responseMock);
 
@@ -53,6 +58,7 @@ describe('Get Current User Handler', (): void => {
             config,
             (userRepoMock as unknown) as UserRepository,
             profilesServiceMock as ProfilesRepo,
+            peopleServiceMock as PeopleRepository,
         );
     });
 
@@ -107,6 +113,26 @@ describe('Get Current User Handler', (): void => {
     describe('with valid token', (): void => {
         const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
         const user = new User();
+        const profile = {
+            id: 'profile_id',
+            orcid: 'orcid',
+            name: {
+                preferred: 'Joe Bloggs',
+                index: 'Bloggs, Joe',
+            },
+            emailAddresses: ['joe@example.com'],
+        };
+        const person = {
+            id: 'profile_id',
+            name: {
+                preferred: 'Joe Bloggs',
+                index: 'Bloggs, Joe',
+            },
+            type: {
+                id: 'reviewing-editor',
+                label: 'Reviewing Editor',
+            },
+        } as Person;
 
         beforeEach(() => {
             user.id = 'id';
@@ -116,19 +142,8 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return user info if user exists', async () => {
-            profilesServiceMock.getProfileById.mockImplementation(() =>
-                Promise.resolve(
-                    Option.of({
-                        id: 'profile_id',
-                        orcid: 'orcid',
-                        name: {
-                            preferred: 'Joe Bloggs',
-                            index: 'Bloggs, Joe',
-                        },
-                        emailAddresses: ['joe@example.com'],
-                    }),
-                ),
-            );
+            profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(profile)));
+            peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(person)));
             userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
 
             const expectedUser = {
@@ -204,6 +219,23 @@ describe('Get Current User Handler', (): void => {
             expect(responseMock.status).not.toHaveBeenCalled();
             expect(responseMock.json).not.toHaveBeenCalled();
             expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('eLife profile not found'));
+        });
+
+        it('should return an error info if person not found', async () => {
+            profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(profile)));
+            peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
+            await flushPromises();
+
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('No roles found'));
         });
     });
 });

@@ -5,6 +5,7 @@ import { UserIdentity } from '@libero/auth-token';
 import { decodeToken } from '../jwt';
 import { Config } from '../config';
 import { ProfilesRepo } from '../repo/profiles';
+import { PeopleRepository } from '../repo/people';
 import { UserRepository } from 'domain/types';
 
 // @todo: put this somewhere else
@@ -14,11 +15,12 @@ interface AuthToken {
     jti: string;
 }
 
-export const GetCurrentUser = (config: Config, userRepo: UserRepository, profilesRepo: ProfilesRepo) => async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-): Promise<void | Response> => {
+export const GetCurrentUser = (
+    config: Config,
+    userRepo: UserRepository,
+    profilesRepo: ProfilesRepo,
+    peopleRepo: PeopleRepository,
+) => async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
     try {
         const authHeader = req.header('Authorization');
 
@@ -55,6 +57,12 @@ export const GetCurrentUser = (config: Config, userRepo: UserRepository, profile
 
         if (maybeProfile.isEmpty()) {
             throw new Unauthorized('eLife profile not found');
+        }
+
+        const maybePerson = await peopleRepo.getPersonById(identity.identifier);
+
+        if (maybePerson.isEmpty()) {
+            throw new Unauthorized('No roles found');
         }
 
         const profile = maybeProfile.get();
