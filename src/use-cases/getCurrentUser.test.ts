@@ -160,6 +160,12 @@ describe('Get Current User Handler', (): void => {
                         },
                     ],
                 },
+                roles: [
+                    {
+                        journal: 'elife',
+                        kind: 'reviewing-editor',
+                    },
+                ],
             };
 
             handler(

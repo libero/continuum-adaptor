@@ -66,6 +66,7 @@ export const GetCurrentUser = (
         }
 
         const profile = maybeProfile.get();
+        const person = maybePerson.get();
         const payload: UserIdentity = {
             token_id: v4(),
             token_version: '0.1-alpha',
@@ -78,7 +79,7 @@ export const GetCurrentUser = (
                     },
                 ],
             },
-            roles: [{ journal: 'elife', kind: 'author' }],
+            roles: [{ journal: 'elife', kind: person.type.id }],
             meta: null,
         };
 
