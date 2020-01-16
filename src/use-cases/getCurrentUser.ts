@@ -14,14 +14,12 @@ interface AuthToken {
     jti: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const GetCurrentUser = (config: Config, userRepo: UserRepository, profilesRepo: ProfilesRepo) => async (
     req: Request,
     res: Response,
     next: NextFunction,
 ): Promise<void | Response> => {
     try {
-        // this part authenticates the token
         const authHeader = req.header('Authorization');
 
         if (!authHeader) {
@@ -40,7 +38,6 @@ export const GetCurrentUser = (config: Config, userRepo: UserRepository, profile
             throw new Unauthorized('Invalid token');
         }
 
-        // now we user the user id to find the user and elife profile id
         const userId = ((decodedToken.get() as unknown) as AuthToken).sub;
         const user = await userRepo.findUser(userId);
 
@@ -51,11 +48,16 @@ export const GetCurrentUser = (config: Config, userRepo: UserRepository, profile
         const identity = user.getIdentityByType('elife');
 
         if (!identity) {
-            throw new Unauthorized('No eLife profile found');
+            throw new Unauthorized('eLife identity not found');
         }
 
-        const profile = (await profilesRepo.getProfileById(identity.identifier)).get();
+        const maybeProfile = await profilesRepo.getProfileById(identity.identifier);
 
+        if (maybeProfile.isEmpty()) {
+            throw new Unauthorized('eLife profile not found');
+        }
+
+        const profile = maybeProfile.get();
         const payload: UserIdentity = {
             token_id: v4(),
             token_version: '0.1-alpha',

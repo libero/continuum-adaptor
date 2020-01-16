@@ -29,6 +29,7 @@ describe('Get Current User Handler', (): void => {
     let nextFunctionMock;
     let userRepoMock;
     let profilesServiceMock;
+    let handler;
 
     beforeEach((): void => {
         requestMock = {
@@ -47,15 +48,16 @@ describe('Get Current User Handler', (): void => {
         };
 
         responseMock.status.mockImplementation(() => responseMock);
+
+        handler = GetCurrentUser(
+            config,
+            (userRepoMock as unknown) as UserRepository,
+            profilesServiceMock as ProfilesRepo,
+        );
     });
 
     describe('with invalid token', (): void => {
         it('should return an error with no authorization header', async () => {
-            const handler = GetCurrentUser(
-                config,
-                (userRepoMock as unknown) as UserRepository,
-                profilesServiceMock as ProfilesRepo,
-            );
             requestMock.headers = {};
 
             handler(
@@ -72,11 +74,6 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error with malformed header', async () => {
-            const handler = GetCurrentUser(
-                config,
-                (userRepoMock as unknown) as UserRepository,
-                profilesServiceMock as ProfilesRepo,
-            );
             requestMock.header.mockImplementation(() => 'BadHeader');
 
             handler(
@@ -92,11 +89,6 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error with invalid token provided', async () => {
-            const handler = GetCurrentUser(
-                config,
-                (userRepoMock as unknown) as UserRepository,
-                profilesServiceMock as ProfilesRepo,
-            );
             requestMock.header.mockImplementation(() => 'Bearer: Invalid Token');
 
             handler(
@@ -113,11 +105,17 @@ describe('Get Current User Handler', (): void => {
     });
 
     describe('with valid token', (): void => {
-        it('should return user info', async () => {
-            const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
-            const user = new User();
+        const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
+        const user = new User();
+
+        beforeEach(() => {
             user.id = 'id';
             user.identities = [{ type: 'elife', identifier: 'profile_id' } as Identity];
+            requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
+            decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as UserIdentity));
+        });
+
+        it('should return user info if user exists', async () => {
             profilesServiceMock.getProfileById.mockImplementation(() =>
                 Promise.resolve(
                     Option.of({
@@ -131,16 +129,7 @@ describe('Get Current User Handler', (): void => {
                     }),
                 ),
             );
-            userRepoMock.findUser.mockImplementation(() => user);
-
-            decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as UserIdentity));
-
-            const handler = GetCurrentUser(
-                config,
-                (userRepoMock as unknown) as UserRepository,
-                profilesServiceMock as ProfilesRepo,
-            );
-            requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
 
             const expectedUser = {
                 identity: {
@@ -169,6 +158,52 @@ describe('Get Current User Handler', (): void => {
             expect(responseMock.status).toHaveBeenCalledWith(200);
             expect(responseMock.json).toHaveBeenCalledTimes(1);
             expect(responseMock.json.mock.calls[0][0]).toMatchObject(expectedUser);
+        });
+
+        it('should return an error if user not found', async () => {
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
+            await flushPromises();
+
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('User not found'));
+        });
+
+        it('should return an error if elife identity not found', async () => {
+            user.identities = [];
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
+
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
+            await flushPromises();
+
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('eLife identity not found'));
+        });
+
+        it('should return an error if profile not found', async () => {
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
+
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
+            await flushPromises();
+
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('eLife profile not found'));
         });
     });
 });
