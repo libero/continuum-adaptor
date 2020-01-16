@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { Unauthorized } from 'http-errors';
+import { Config as KnexConfig } from 'knex';
+import { Option } from 'funfix';
 import * as flushPromises from 'flush-promises';
 import * as jwt from '../jwt';
-import { Option } from 'funfix';
 import { UserIdentity } from '@libero/auth-token';
 import { Config } from '../config';
 import { GetCurrentUser } from './getCurrentUser';
-import { Config as KnexConfig } from 'knex';
+import { ProfilesRepo } from '../repo/profiles';
+import { UserRepository, User, Identity } from '../domain/types';
 
 jest.mock('../logger');
 
@@ -25,6 +27,8 @@ describe('Get Current User Handler', (): void => {
     let requestMock;
     let responseMock;
     let nextFunctionMock;
+    let userRepoMock;
+    let profilesServiceMock;
 
     beforeEach((): void => {
         requestMock = {
@@ -35,13 +39,23 @@ describe('Get Current User Handler', (): void => {
             json: jest.fn(),
         };
         nextFunctionMock = jest.fn();
+        userRepoMock = {
+            findUser: jest.fn(),
+        };
+        profilesServiceMock = {
+            getProfileById: jest.fn(),
+        };
 
         responseMock.status.mockImplementation(() => responseMock);
     });
 
     describe('with invalid token', (): void => {
         it('should return an error with no authorization header', async () => {
-            const handler = GetCurrentUser(config);
+            const handler = GetCurrentUser(
+                config,
+                (userRepoMock as unknown) as UserRepository,
+                profilesServiceMock as ProfilesRepo,
+            );
             requestMock.headers = {};
 
             handler(
@@ -58,7 +72,11 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error with malformed header', async () => {
-            const handler = GetCurrentUser(config);
+            const handler = GetCurrentUser(
+                config,
+                (userRepoMock as unknown) as UserRepository,
+                profilesServiceMock as ProfilesRepo,
+            );
             requestMock.header.mockImplementation(() => 'BadHeader');
 
             handler(
@@ -74,7 +92,11 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error with invalid token provided', async () => {
-            const handler = GetCurrentUser(config);
+            const handler = GetCurrentUser(
+                config,
+                (userRepoMock as unknown) as UserRepository,
+                profilesServiceMock as ProfilesRepo,
+            );
             requestMock.header.mockImplementation(() => 'Bearer: Invalid Token');
 
             handler(
@@ -90,14 +112,51 @@ describe('Get Current User Handler', (): void => {
         });
     });
 
-    describe('with invalid token', (): void => {
+    describe('with valid token', (): void => {
         it('should return user info', async () => {
             const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
+            const user = new User();
+            user.id = 'id';
+            user.identities = [{ type: 'elife', identifier: 'profile_id' } as Identity];
+            profilesServiceMock.getProfileById.mockImplementation(() =>
+                Promise.resolve(
+                    Option.of({
+                        id: 'profile_id',
+                        orcid: 'orcid',
+                        name: {
+                            preferred: 'Joe Bloggs',
+                            index: 'Bloggs, Joe',
+                        },
+                        emailAddresses: ['joe@example.com'],
+                    }),
+                ),
+            );
+            userRepoMock.findUser.mockImplementation(() => user);
 
-            decodeTokenMock.mockImplementation(() => Option.of(({ entity_id: 'id' } as unknown) as UserIdentity));
+            decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as UserIdentity));
 
-            const handler = GetCurrentUser(config);
+            const handler = GetCurrentUser(
+                config,
+                (userRepoMock as unknown) as UserRepository,
+                profilesServiceMock as ProfilesRepo,
+            );
             requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
+
+            const expectedUser = {
+                identity: {
+                    user_id: 'id',
+                    external: [
+                        {
+                            id: 'profile_id',
+                            domain: 'elife-profiles',
+                        },
+                        {
+                            id: 'orcid',
+                            domain: 'orcid',
+                        },
+                    ],
+                },
+            };
 
             handler(
                 requestMock as Request,
@@ -109,7 +168,7 @@ describe('Get Current User Handler', (): void => {
             expect(responseMock.status).toHaveBeenCalledTimes(1);
             expect(responseMock.status).toHaveBeenCalledWith(200);
             expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ entity_id: 'id' });
+            expect(responseMock.json.mock.calls[0][0]).toMatchObject(expectedUser);
         });
     });
 });

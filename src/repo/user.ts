@@ -24,12 +24,26 @@ export class KnexUserRepository implements UserRepository {
         return typeof identity === 'undefined' ? null : identity;
     }
 
-    private async findUser(userId: string): Promise<User> {
-        return await this.knex
+    public async findUser(userId: string): Promise<User> {
+        const user = await this.knex
             .withSchema('public')
             .first('id', 'created', 'updated', 'default_identity as defaultIdentity')
             .from<User>('user')
             .where('id', userId);
+
+        if (!user) {
+            return user;
+        }
+
+        const identities = await this.knex
+            .select('id', 'created', 'updated', 'type', 'identifier', 'display_name as displayName', 'email')
+            .withSchema('public')
+            .from<Identity>('identity')
+            .where('user_id', userId);
+
+        user.identities = identities;
+
+        return user;
     }
 
     private async createUser(): Promise<string> {

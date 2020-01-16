@@ -39,10 +39,12 @@ describe('User repository', () => {
             where: jest.fn(),
             insert: jest.fn(),
             into: jest.fn(),
+            select: jest.fn(),
         };
         mockQueryBuilder.withSchema.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.first.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.from.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.select.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.where.mockImplementation(() => ({ userId: '123' }));
 
         const mockKnex = (mockQueryBuilder as unknown) as Knex;
