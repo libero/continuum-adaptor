@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { Unauthorized } from 'http-errors';
 import { None, Option } from 'funfix';
 import * as flushPromises from 'flush-promises';
 import { Authenticate } from './authenticate';
@@ -29,6 +30,7 @@ describe('Authenticate Handler', () => {
     let eventBusMock;
     let requestMock;
     let responseMock;
+    let nextFunctionMock;
     let decodeJournalTokenMock;
 
     beforeEach(() => {
@@ -48,6 +50,7 @@ describe('Authenticate Handler', () => {
             json: jest.fn(),
             redirect: jest.fn(),
         };
+        nextFunctionMock = jest.fn();
         decodeJournalTokenMock = jest.spyOn(jwt, 'decodeJournalToken');
 
         responseMock.status.mockImplementation(() => responseMock);
@@ -68,14 +71,17 @@ describe('Authenticate Handler', () => {
             const handler = Authenticate(config, userRepoMock, eventBusMock);
             requestMock.params = {};
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
 
             await flushPromises();
 
-            expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(500);
-            expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'No token' });
+            expect(nextFunctionMock).toHaveBeenCalledTimes(1);
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('No token'));
         });
 
         it('should throw error with invalid token', async () => {
@@ -83,14 +89,17 @@ describe('Authenticate Handler', () => {
 
             const handler = Authenticate(config, userRepoMock, eventBusMock);
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
 
             await flushPromises();
 
-            expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(500);
-            expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Invalid token' });
+            expect(nextFunctionMock).toHaveBeenCalledTimes(1);
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('Invalid token'));
         });
     });
 
@@ -109,7 +118,11 @@ describe('Authenticate Handler', () => {
         it('should redirect to correct url and contain an encoded token', async () => {
             const handler = Authenticate(config, userRepoMock, eventBusMock);
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
 
             await flushPromises();
 
@@ -145,7 +158,11 @@ describe('Authenticate Handler', () => {
         it('should send logged in event for audit', async () => {
             const handler = Authenticate(config, userRepoMock, eventBusMock);
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
 
             await flushPromises();
 

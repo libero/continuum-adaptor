@@ -52,14 +52,14 @@ describe('Authenticate', (): void => {
 
     it('rejects request when no token passed', async (): Promise<void> => {
         await axios.get('http://localhost:3001/authenticate').catch(({response}) => {
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(401);
             expect(response.data).toEqual({ ok: false, msg: 'No token' })
         });
     });
 
     it('rejects request when invalid token passed', async (): Promise<void> => {
         await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({response}) => {
-            expect(response.status).toBe(500);
+            expect(response.status).toBe(401);
             expect(response.data).toEqual({ ok: false, msg: 'Invalid token' })
         });
     });

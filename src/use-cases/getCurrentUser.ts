@@ -1,33 +1,34 @@
-import { Request, Response } from 'express';
-import { DomainLogger as logger } from '../logger';
+import { Request, Response, NextFunction } from 'express';
+import { Unauthorized } from 'http-errors';
 import { decodeToken } from '../jwt';
 import { Config } from '../config';
 
-export const GetCurrentUser = (config: Config) => async (request: Request, response: Response): Promise<void> => {
-    const authHeader = request.header('Authorization');
+export const GetCurrentUser = (config: Config) => async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void | Response> => {
+    try {
+        const authHeader = req.header('Authorization');
 
-    if (!authHeader) {
-        logger.warn('noAuthHeader');
-        response.status(401).json({ ok: false, msg: 'Invalid token' });
-        return;
+        if (!authHeader) {
+            throw new Unauthorized('Invalid token');
+        }
+
+        const token = authHeader.split(' ')[1];
+
+        if (!token) {
+            throw new Unauthorized('Invalid token');
+        }
+
+        const userIdentity = decodeToken(config.authentication_jwt_secret, token);
+
+        if (userIdentity.isEmpty()) {
+            throw new Unauthorized('Invalid token');
+        }
+
+        return res.status(200).json(userIdentity.get());
+    } catch (error) {
+        return next(error);
     }
-
-    const token = authHeader.split(' ')[1];
-
-    if (!token) {
-        logger.warn('noToken');
-        response.status(401).json({ ok: false, msg: 'Invalid token' });
-        return;
-    }
-
-    const userIdentity = decodeToken(config.authentication_jwt_secret, token);
-
-    if (userIdentity.isEmpty()) {
-        logger.warn('invalidToken');
-        response.status(401).json({ ok: false, msg: 'Invalid token' });
-        return;
-    }
-
-    response.status(200);
-    response.json(userIdentity.get());
 };

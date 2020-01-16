@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { Unauthorized } from 'http-errors';
 import * as flushPromises from 'flush-promises';
 import * as jwt from '../jwt';
 import { Option } from 'funfix';
@@ -23,6 +24,7 @@ const config: Config = {
 describe('Get Current User Handler', (): void => {
     let requestMock;
     let responseMock;
+    let nextFunctionMock;
 
     beforeEach((): void => {
         requestMock = {
@@ -32,6 +34,7 @@ describe('Get Current User Handler', (): void => {
             status: jest.fn(),
             json: jest.fn(),
         };
+        nextFunctionMock = jest.fn();
 
         responseMock.status.mockImplementation(() => responseMock);
     });
@@ -41,42 +44,49 @@ describe('Get Current User Handler', (): void => {
             const handler = GetCurrentUser(config);
             requestMock.headers = {};
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
 
             await flushPromises();
 
-            expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(401);
-            expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Invalid token' });
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('Invalid token'));
         });
 
         it('should return an error with malformed header', async () => {
             const handler = GetCurrentUser(config);
             requestMock.header.mockImplementation(() => 'BadHeader');
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
-
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
             await flushPromises();
 
-            expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(401);
-            expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Invalid token' });
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('Invalid token'));
         });
 
         it('should return an error with invalid token provided', async () => {
             const handler = GetCurrentUser(config);
             requestMock.header.mockImplementation(() => 'Bearer: Invalid Token');
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
-
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
             await flushPromises();
 
-            expect(responseMock.status).toHaveBeenCalledTimes(1);
-            expect(responseMock.status).toHaveBeenCalledWith(401);
-            expect(responseMock.json).toHaveBeenCalledTimes(1);
-            expect(responseMock.json).toHaveBeenCalledWith({ ok: false, msg: 'Invalid token' });
+            expect(responseMock.status).not.toHaveBeenCalled();
+            expect(responseMock.json).not.toHaveBeenCalled();
+            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('Invalid token'));
         });
     });
 
@@ -89,7 +99,11 @@ describe('Get Current User Handler', (): void => {
             const handler = GetCurrentUser(config);
             requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
 
-            handler(requestMock as Request, (responseMock as unknown) as Response);
+            handler(
+                requestMock as Request,
+                (responseMock as unknown) as Response,
+                (nextFunctionMock as unknown) as NextFunction,
+            );
             await flushPromises();
 
             expect(responseMock.status).toHaveBeenCalledTimes(1);
