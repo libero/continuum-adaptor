@@ -66,5 +66,5 @@ export const Authenticate = (config: Config, userService: UserRepository, eventB
     // send audit logged in message
     eventBus.publish(new UserLoggedInEvent(eventPayload));
 
-    res.redirect(`${config.login_return_url}#${encodedPayload}`);
+    return res.redirect(`${config.login_return_url}#${encodedPayload}`);
 };
