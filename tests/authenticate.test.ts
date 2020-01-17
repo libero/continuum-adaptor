@@ -13,7 +13,7 @@ const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const MOCK_TOKEN_EXP = 20000;
 
 describe('Authenticate', (): void => {
-    const url = `amqp://${config.url}`;
+    const url = `amqp://${config.rabbitmq_url}`;
     const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
     // happy path
     it('authenticates a user session token', async (): Promise<void> => {
@@ -97,7 +97,6 @@ describe('Authenticate', (): void => {
     it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
         jest.setTimeout(1200000);
         let payload;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         await eventBus.subscribe(
             LiberoEventType.userLoggedInIdentifier,
             (event): Promise<boolean> => {
@@ -119,9 +118,10 @@ describe('Authenticate', (): void => {
 
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
 
-        await waitForExpect(() => {
+        await waitForExpect(async () => {
             console.log('expect payload', payload);
             expect(payload).toBe('authorized');
+            await eventBus.destroy();
             done();
         }, 90000, 5000);
     });
