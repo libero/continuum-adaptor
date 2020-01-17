@@ -2,22 +2,29 @@ import * as Knex from 'knex';
 import { KnexUserRepository } from './user';
 
 describe('User repository', () => {
-    it('should insert a new user and identity if not present', async () => {
-        const mockQueryBuilder = {
+    let mockQueryBuilder;
+    let mockKnex;
+
+    beforeEach(() => {
+        mockQueryBuilder = {
             withSchema: jest.fn(),
             first: jest.fn(),
             from: jest.fn(),
             where: jest.fn(),
             insert: jest.fn(),
             into: jest.fn(),
+            select: jest.fn(),
         };
-        const mockKnex = (mockQueryBuilder as unknown) as Knex;
-
         mockQueryBuilder.withSchema.mockImplementation(() => mockQueryBuilder);
+        mockQueryBuilder.select.mockImplementation(() => mockQueryBuilder);
+        mockKnex = (mockQueryBuilder as unknown) as Knex;
+    });
+
+    it('should insert a new user and identity if not present', async () => {
         mockQueryBuilder.first.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.from.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.insert.mockImplementation(() => mockQueryBuilder);
-        mockQueryBuilder.where.mockImplementation(() => null);
+        mockQueryBuilder.where.mockReturnValueOnce(null).mockReturnValueOnce({});
         mockQueryBuilder.into.mockImplementationOnce(() => ['123']);
 
         const userRepository = new KnexUserRepository(mockKnex);
@@ -32,22 +39,11 @@ describe('User repository', () => {
     });
 
     it('should retrieve a user if present', async () => {
-        const mockQueryBuilder = {
-            withSchema: jest.fn(),
-            first: jest.fn(),
-            from: jest.fn(),
-            where: jest.fn(),
-            insert: jest.fn(),
-            into: jest.fn(),
-            select: jest.fn(),
-        };
-        mockQueryBuilder.withSchema.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.first.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.from.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.select.mockImplementation(() => mockQueryBuilder);
         mockQueryBuilder.where.mockImplementation(() => ({ userId: '123' }));
 
-        const mockKnex = (mockQueryBuilder as unknown) as Knex;
         const userRepository = new KnexUserRepository(mockKnex);
 
         await userRepository.findOrCreateUserWithProfileId('profile');

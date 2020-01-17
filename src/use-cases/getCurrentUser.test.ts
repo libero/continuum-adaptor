@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Unauthorized } from 'http-errors';
 import { Config as KnexConfig } from 'knex';
-import { Option } from 'funfix';
+import { Option, None } from 'funfix';
 import * as flushPromises from 'flush-promises';
 import * as jwt from '../jwt';
 import { Config } from '../config';
@@ -143,28 +143,12 @@ describe('Get Current User Handler', (): void => {
         it('should return user info if user exists', async () => {
             profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(profile)));
             peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(person)));
-            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(Option.of(user)));
 
             const expectedUser = {
-                identity: {
-                    user_id: 'id',
-                    external: [
-                        {
-                            id: 'profile_id',
-                            domain: 'elife-profiles',
-                        },
-                        {
-                            id: 'orcid',
-                            domain: 'orcid',
-                        },
-                    ],
-                },
-                roles: [
-                    {
-                        journal: 'elife',
-                        kind: 'reviewing-editor',
-                    },
-                ],
+                id: 'id',
+                name: 'Joe Bloggs',
+                role: 'reviewing-editor',
             };
 
             handler(
@@ -181,6 +165,8 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error if user not found', async () => {
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(None));
+
             handler(
                 requestMock as Request,
                 (responseMock as unknown) as Response,
@@ -195,7 +181,7 @@ describe('Get Current User Handler', (): void => {
 
         it('should return an error if elife identity not found', async () => {
             user.identities = [];
-            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(Option.of(user)));
             profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
 
             handler(
@@ -211,7 +197,7 @@ describe('Get Current User Handler', (): void => {
         });
 
         it('should return an error if profile not found', async () => {
-            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(Option.of(user)));
             profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
 
             handler(
@@ -229,7 +215,7 @@ describe('Get Current User Handler', (): void => {
         it('should return an error info if person not found', async () => {
             profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(profile)));
             peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
-            userRepoMock.findUser.mockImplementation(() => Promise.resolve(user));
+            userRepoMock.findUser.mockImplementation(() => Promise.resolve(Option.of(user)));
 
             handler(
                 requestMock as Request,

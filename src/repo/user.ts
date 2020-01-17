@@ -1,6 +1,6 @@
-// Use knex to connect to a database and write stuff to the table
 import * as Knex from 'knex';
 import { v4 } from 'uuid';
+import { Option, None } from 'funfix';
 import { UserRepository, Identity, User } from '../domain/types';
 
 export class KnexUserRepository implements UserRepository {
@@ -24,15 +24,15 @@ export class KnexUserRepository implements UserRepository {
         return typeof identity === 'undefined' ? null : identity;
     }
 
-    public async findUser(userId: string): Promise<User> {
-        const user = await this.knex
+    public async findUser(userId: string): Promise<Option<User>> {
+        const row = await this.knex
             .withSchema('public')
             .first('id', 'created', 'updated', 'default_identity as defaultIdentity')
             .from<User>('user')
             .where('id', userId);
 
-        if (!user) {
-            return user;
+        if (!row) {
+            return None;
         }
 
         const identities = await this.knex
@@ -41,9 +41,14 @@ export class KnexUserRepository implements UserRepository {
             .from<Identity>('identity')
             .where('user_id', userId);
 
+        const user = new User();
+        user.id = row.id;
+        user.created = row.created;
+        user.updated = row.updated;
+        user.defaultIdentity = row.defaultIdentity;
         user.identities = identities;
 
-        return user;
+        return Option.of(user);
     }
 
     private async createUser(): Promise<string> {
@@ -62,7 +67,6 @@ export class KnexUserRepository implements UserRepository {
     }
 
     private async createIdentity(profileId: string, userId: string): Promise<void> {
-        // TODO: ensure unique constraint on userId and type
         return await this.knex
             .withSchema('public')
             .insert({
@@ -81,6 +85,13 @@ export class KnexUserRepository implements UserRepository {
             userId = await this.createUser();
             await this.createIdentity(profileId, userId);
         }
-        return await this.findUser(userId);
+
+        const user = await this.findUser(userId);
+
+        if (user.isEmpty()) {
+            throw new Error('Unable to create User in database');
+        }
+
+        return user.get();
     }
 }

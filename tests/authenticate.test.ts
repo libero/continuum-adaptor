@@ -1,34 +1,14 @@
 /* eslint-disable prettier/prettier */
 import axios from 'axios';
-import { readFileSync } from 'fs';
-import { sign, verify } from 'jsonwebtoken';
-
-const configPath = `${__dirname}/config/continuum-adaptor.json`;
-const config = JSON.parse(readFileSync(configPath, 'utf8'));
-
-// time in ms from now the mock journal token will be valid for
-const MOCK_TOKEN_EXP = 20000
+import { login, LoginReturnValue, config } from './utils';
 
 describe('Authenticate', (): void => {
     // happy path
     it('authenticates a user session token', async (): Promise<void> => {
-        const mockJournalToken = sign(
-            {
-                iss: 'journal--prod',
-                iat: 1567503944,
-                exp: new Date().getTime() + MOCK_TOKEN_EXP,
-                id: 'TEST_ID',
-                'new-session': true,
-            },
-            config.continuum_jwt_secret,
-        );
-
-        await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`).then(res => {
+        await login().then(({ res, redirectUrl, decodedToken }: LoginReturnValue) => {
             expect(res.status).toBe(200);
             expect(res.data).toBe('Redirect reached successfully')
-            const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
             expect(redirectUrl).toBe(config.login_return_url);
-            const decoded = verify(returnedToken, config.authentication_jwt_secret);
 
             const expectedPayload = {
                 iss: 'continuum-auth',
@@ -36,17 +16,17 @@ describe('Authenticate', (): void => {
             };
             const currentTimestamp = new Date().getTime() / 1000;
 
-            expect(typeof decoded['iat']).toBe('number');
-            expect(decoded['iat']).toBeLessThan(currentTimestamp);
+            expect(typeof decodedToken['iat']).toBe('number');
+            expect(decodedToken['iat']).toBeLessThan(currentTimestamp);
 
-            expect(typeof decoded['exp']).toBe('number');
-            expect(decoded['exp']).toBeGreaterThan(currentTimestamp);
+            expect(typeof decodedToken['exp']).toBe('number');
+            expect(decodedToken['exp']).toBeGreaterThan(currentTimestamp);
 
-            expect(decoded['sub']).toHaveLength(36);
-            expect(typeof decoded['jti']).toBe('string');
-            expect(decoded['jti']).toHaveLength(36);
+            expect(decodedToken['sub']).toHaveLength(36);
+            expect(typeof decodedToken['jti']).toBe('string');
+            expect(decodedToken['jti']).toHaveLength(36);
 
-            expect(decoded).toMatchObject(expectedPayload);
+            expect(decodedToken).toMatchObject(expectedPayload);
         });
     });
 

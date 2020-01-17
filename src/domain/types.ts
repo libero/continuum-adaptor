@@ -1,3 +1,5 @@
+import { Option } from 'funfix';
+
 export class User {
     id: string;
     created: Date;
@@ -23,6 +25,6 @@ export interface Identity {
 }
 
 export interface UserRepository {
-    findUser(userId: string): Promise<User>;
+    findUser(userId: string): Promise<Option<User>>;
     findOrCreateUserWithProfileId(profileId: string): Promise<User>;
 }

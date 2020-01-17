@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { Unauthorized } from 'http-errors';
-import { v4 } from 'uuid';
-import { UserIdentity } from '@libero/auth-token';
 import { decodeToken, LiberoAuthToken } from '../jwt';
 import { Config } from '../config';
 import { ProfilesRepo } from '../repo/profiles';
 import { PeopleRepository } from '../repo/people';
-import { UserRepository } from 'domain/types';
+import { UserRepository } from '../domain/types';
+import { DomainLogger } from '../logger';
 
 export const GetCurrentUser = (
     config: Config,
@@ -27,20 +26,25 @@ export const GetCurrentUser = (
             throw new Unauthorized('Invalid token');
         }
 
-        const decodedToken = decodeToken(config.authentication_jwt_secret, token);
+        const maybeDecodedToken = decodeToken(config.authentication_jwt_secret, token);
 
-        if (decodedToken.isEmpty()) {
+        if (maybeDecodedToken.isEmpty()) {
             throw new Unauthorized('Invalid token');
         }
 
-        const userId = ((decodedToken.get() as unknown) as LiberoAuthToken).sub;
-        const user = await userRepo.findUser(userId);
+        const userId = (maybeDecodedToken.get() as LiberoAuthToken).sub;
 
-        if (!user) {
+        if (!userId) {
+            throw new Unauthorized('Invalid token');
+        }
+
+        const maybeUser = await userRepo.findUser(userId);
+
+        if (maybeUser.isEmpty()) {
             throw new Unauthorized('User not found');
         }
 
-        const identity = user.getIdentityByType('elife');
+        const identity = maybeUser.get().getIdentityByType('elife');
 
         if (!identity) {
             throw new Unauthorized('eLife identity not found');
@@ -60,41 +64,16 @@ export const GetCurrentUser = (
 
         const profile = maybeProfile.get();
         const person = maybePerson.get();
-        const payload: UserIdentity = {
-            token_id: v4(),
-            token_version: '0.1-alpha',
-            identity: {
-                user_id: userId,
-                external: [
-                    {
-                        id: profile.id,
-                        domain: 'elife-profiles',
-                    },
-                ],
-            },
-            roles: [{ journal: 'elife', kind: person.type.id }],
-            meta: null,
+
+        const payload = {
+            id: userId,
+            name: profile.name.preferred,
+            role: person.type.id,
         };
-
-        if (profile.orcid) {
-            payload.identity.external.push({
-                id: profile.orcid,
-                domain: 'orcid',
-            });
-        }
-
-        const hasEmail = 'emailAddresses' in profile && profile.emailAddresses.length > 0;
-        const emailAddress = hasEmail ? profile.emailAddresses[0].value : null;
-
-        // We don't care if there is no email
-        if (emailAddress) {
-            payload.meta = {
-                email: emailAddress,
-            };
-        }
 
         return res.status(200).json(payload);
     } catch (error) {
+        DomainLogger.info(error.stack);
         return next(error);
     }
 };
