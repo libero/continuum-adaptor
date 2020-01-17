@@ -5,6 +5,8 @@ import * as knex from 'knex';
 import errorHandler from './middleware/error-handler';
 import { InfraLogger as logger } from './logger';
 import { KnexUserRepository } from './repo/user';
+import { ProfilesService } from './repo/profiles';
+import { PeopleService } from './repo/people';
 import { HealthCheck, Authenticate, GetCurrentUser } from './use-cases';
 import { setupEventBus } from './event-bus';
 import config from './config';
@@ -15,8 +17,9 @@ const init = async (): Promise<void> => {
     const app: Express = express();
     const knexConnection = knex(config.knex);
 
-    // Setup connections to the databases/message queues etc.
     const userRepository = new KnexUserRepository(knexConnection);
+    const profileService = new ProfilesService(`${config.continuum_api_url}/profiles`);
+    const peopleService = new PeopleService(`${config.continuum_api_url}/people`);
 
     // setup event bus
     const eventBus = await setupEventBus({ url: config.rabbitmq_url } as EventConfig);
@@ -32,7 +35,7 @@ const init = async (): Promise<void> => {
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
     app.get('/authenticate/:token?', Authenticate(config, userRepository, eventBus));
-    app.get('/current-user', GetCurrentUser(config));
+    app.get('/current-user', GetCurrentUser(config, userRepository, profileService, peopleService));
     app.use(errorHandler);
 
     const server = app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));

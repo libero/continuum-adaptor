@@ -4,7 +4,6 @@ import { Config as KnexConfig } from 'knex';
 import { Option } from 'funfix';
 import * as flushPromises from 'flush-promises';
 import * as jwt from '../jwt';
-import { UserIdentity } from '@libero/auth-token';
 import { Config } from '../config';
 import { GetCurrentUser } from './getCurrentUser';
 import { ProfilesRepo } from '../repo/profiles';
@@ -138,7 +137,7 @@ describe('Get Current User Handler', (): void => {
             user.id = 'id';
             user.identities = [{ type: 'elife', identifier: 'profile_id' } as Identity];
             requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
-            decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as UserIdentity));
+            decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as jwt.LiberoAuthToken));
         });
 
         it('should return user info if user exists', async () => {
