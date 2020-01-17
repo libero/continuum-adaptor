@@ -3,7 +3,8 @@ import axios from 'axios';
 import { readFileSync } from 'fs';
 import { sign, verify } from 'jsonwebtoken';
 import { RabbitEventBus } from '@libero/event-bus';
-import { LiberoEventType, UserLoggedInPayload } from '@libero/event-types';
+import { LiberoEventType } from '@libero/event-types';
+import waitForExpect from 'wait-for-expect';
 
 const configPath = `${__dirname}/config/continuum-auth.json`;
 const config = JSON.parse(readFileSync(configPath, 'utf8'));
@@ -91,10 +92,20 @@ describe('Authenticate', (): void => {
         });
     });
 
-    it('sends the apropriate message to the message bus when user is authenticated', async (): Promise<void> => {
-        jest.setTimeout(20000);
-        const url = 'amqp://localhost';
+    it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
+        jest.setTimeout(1200000);
+        const url = 'amqp://locahost';
+        let payload;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
+        await eventBus.subscribe(
+            LiberoEventType.userLoggedInIdentifier,
+            (event): Promise<boolean> => {
+                console.log('resolved payload', event.payload);
+                payload = event.payload['result'];
+                return Promise.resolve(true);
+            },
+        );
         const mockJournalToken = sign(
             {
                 iss: 'journal--prod',
@@ -108,18 +119,10 @@ describe('Authenticate', (): void => {
 
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
 
-        const testPromise = new Promise(async resolve =>
-            eventBus.subscribe(
-                LiberoEventType.userLoggedInIdentifier,
-                (event): Promise<boolean> => {
-                    resolve(event.payload);
-                    return Promise.resolve(true);
-                },
-            ),
-        );
-        await testPromise.then(async (payload: UserLoggedInPayload) => {
-            expect(payload.result).toBe('authorized');
-            await eventBus.destroy();
-        });
+        await waitForExpect(() => {
+            console.log('expect payload', payload);
+            expect(payload).toBe('authorized');
+            done();
+        }, 90000, 5000);
     });
 });
