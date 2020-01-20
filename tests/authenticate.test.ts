@@ -47,7 +47,7 @@ describe('Authenticate', (): void => {
     });
 
     it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
-        jest.setTimeout(18000); // to avoid jest timeout on CI env
+        jest.setTimeout(25000); // to avoid jest timeout on CI env
         const url = `amqp://localhost`;
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
         let payload;
@@ -66,7 +66,7 @@ describe('Authenticate', (): void => {
                 await eventBus.destroy();
                 done();
             },
-            16000,
+            23000,
             1000,
         );
     });
