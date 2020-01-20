@@ -13,7 +13,7 @@ const config = JSON.parse(readFileSync(configPath, 'utf8'));
 const MOCK_TOKEN_EXP = 20000;
 
 describe('Authenticate', (): void => {
-    const url = `amqp://${config.rabbitmq_url}`;
+    const url = `amqp://localhost`;
     const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
     // happy path
     it('authenticates a user session token', async (): Promise<void> => {
@@ -100,7 +100,6 @@ describe('Authenticate', (): void => {
         await eventBus.subscribe(
             LiberoEventType.userLoggedInIdentifier,
             (event): Promise<boolean> => {
-                console.log('resolved payload', event.payload);
                 payload = event.payload['result'];
                 return Promise.resolve(true);
             },
@@ -119,7 +118,6 @@ describe('Authenticate', (): void => {
         await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
 
         await waitForExpect(async () => {
-            console.log('expect payload', payload);
             expect(payload).toBe('authorized');
             await eventBus.destroy();
             done();
