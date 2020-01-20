@@ -63,6 +63,7 @@
         "prettier": "^1.18.2",
         "ts-jest": "^24.1.0",
         "ts-node": "^8.3.0",
-        "typescript": "^3.7.2"
+        "typescript": "^3.7.2",
+        "wait-for-expect": "^3.0.1"
     }
 }
