@@ -1,6 +1,5 @@
 import { Option, None } from 'funfix';
 import { verify, sign } from 'jsonwebtoken';
-import { UserIdentity } from '@libero/auth-token';
 import { InfraLogger as logger } from './logger';
 
 export const encode = (secret: string, payload: object, expiresIn: string): string => {
@@ -16,6 +15,13 @@ export interface JournalAuthToken {
     'new-session': boolean;
 }
 
+// @todo: put this in @libero/auth-token
+export interface LiberoAuthToken {
+    sub: string;
+    issuer: string;
+    jti: string;
+}
+
 export const decodeJournalToken = (secret: string, token: string): Option<JournalAuthToken> => {
     try {
         return Option.of(verify(token, secret) as JournalAuthToken);
@@ -25,9 +31,9 @@ export const decodeJournalToken = (secret: string, token: string): Option<Journa
     }
 };
 
-export const decodeToken = (secret: string, token: string): Option<UserIdentity> => {
+export const decodeToken = (secret: string, token: string): Option<LiberoAuthToken> => {
     try {
-        return Option.of(verify(token, secret) as UserIdentity);
+        return Option.of(verify(token, secret) as LiberoAuthToken);
     } catch (_) {
         logger.warn('invalidJwt');
         return None;

@@ -5,18 +5,7 @@ import { RabbitEventBus } from '@libero/event-bus';
 import { UserLoggedInEvent, UserLoggedInPayload } from '@libero/event-types';
 import { UserRepository } from '../domain/types';
 import { Config } from '../config';
-import { encode, decodeJournalToken } from '../jwt';
-
-// This is the endpoint that does the actual token exchange/user lookup and signing the output token
-// And yeah, I know the controller/usecase code shouldn't be mixed but idec, we can refactor it at some point
-// The tokens will take the following shape:
-// const example_token = {
-//   iss: "journal--prod",
-//   iat: 1567503944,
-//   exp: 1567504004,
-//   id: "jfrdocq8",
-//   "new-session": true
-// };
+import { encode, decodeJournalToken, LiberoAuthToken } from '../jwt';
 
 export const Authenticate = (config: Config, userService: UserRepository, eventBus: RabbitEventBus) => async (
     req: Request,
@@ -49,7 +38,7 @@ export const Authenticate = (config: Config, userService: UserRepository, eventB
             sub: user.id,
             issuer: 'libero',
             jti: v4(),
-        };
+        } as LiberoAuthToken;
 
         const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
 
