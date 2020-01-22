@@ -4,5 +4,6 @@ import { LiberoEventType } from '@libero/event-types';
 export const setupEventBus = async (config: EventConfig): Promise<RabbitEventBus> => {
     const url = `amqp://${config.url}`;
     const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
+    await eventBus.connect();
     return eventBus;
 };

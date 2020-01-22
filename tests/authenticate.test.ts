@@ -50,6 +50,7 @@ describe('Authenticate', (): void => {
         jest.setTimeout(25000); // to avoid jest timeout on CI env
         const url = `amqp://localhost`;
         const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
+        await eventBus.connect();
         let payload;
         await eventBus.subscribe(
             LiberoEventType.userLoggedInIdentifier,

@@ -304,10 +304,10 @@
     pino "^5.13.2"
     uuid "^3.3.3"
 
-"@libero/event-bus@^0.1.3", "@libero/event-bus@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@libero/event-bus/-/event-bus-0.1.4.tgz#c5d437b6cd4e2e7d113acb3fbf23ca5067f35a7d"
-  integrity sha512-MWPZBY/hmP9oDbDJPMj1mAkc+/9ZlFrjV8XFw6MxtGsBDbFHRfAISQcAMA0WSV0iPiC+v7yrnsJeFu67QIdzug==
+"@libero/event-bus@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@libero/event-bus/-/event-bus-0.2.2.tgz#6e4e174b0b57e05de645512f11f351c5c96e35ac"
+  integrity sha512-LNIkjBUdHwiXeAFv+9gM1EDAJ/6w5BfRAzGAg29s/S7uEj1ybYFI8SylhXnqzwWaHSwXzt+XYMVovHPussIXgA==
   dependencies:
     "@types/amqplib" "^0.5.13"
     "@types/jest" "^24.0.18"
@@ -321,12 +321,12 @@
     rs-channel-node "^0.0.3"
     uuid "^3.3.3"
 
-"@libero/event-types@^0.1.3":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.1.4.tgz#e3d705e34d94329c989ab5aad6561d69ebd37555"
-  integrity sha512-MyhDnEtlUFL5+MJRLXcQ+9Q/Ij2bNBlkx+aHHGZUSqjAaTCjOuYQF2h5bqElkH97u3NldwggJGzQyI85kPO7eQ==
+"@libero/event-types@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@libero/event-types/-/event-types-0.2.2.tgz#c369f1e6c9d58d7584157c6eb65a374c3f39d0e7"
+  integrity sha512-Rn5N8LOmxEHN4vrakCBJzdfaMZXbnoI4BMXfqhbisBmtFOm4LJZlbjlNlXwpmyfLMP4d2blwCRvLNwd+YXFmrg==
   dependencies:
-    "@libero/event-bus" "^0.1.4"
+    "@libero/event-bus" "0.2.2"
 
 "@libero/migrator@^0.1.0":
   version "0.1.0"
