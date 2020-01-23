@@ -13,7 +13,7 @@ describe('Authenticate', (): void => {
             expect(redirectUrl).toBe(config.login_return_url);
 
             const expectedPayload = {
-                iss: 'continuum-auth',
+                iss: 'continuum-adaptor',
                 issuer: 'libero',
             };
             const currentTimestamp = new Date().getTime() / 1000;
@@ -49,7 +49,7 @@ describe('Authenticate', (): void => {
     it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
         jest.setTimeout(25000); // to avoid jest timeout on CI env
         const url = `amqp://localhost`;
-        const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-auth');
+        const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-adaptor');
         await eventBus.connect();
         let payload;
         await eventBus.subscribe(

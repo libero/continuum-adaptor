@@ -1,9 +1,9 @@
 version: '3'
 services:
-  continuum-auth:
+  continuum-adaptor:
     build:
       context: "."
       dockerfile: 'Dockerfile'
       args:
         image_tag: ${IMAGE_TAG:-local}
-    image: libero/continuum-auth:${IMAGE_TAG:-local}
+    image: libero/continuum-adaptor:${IMAGE_TAG:-local}

@@ -35,7 +35,7 @@ describe('GetCurrentUser', (): void => {
 
         const signedToken = sign(tokenPayload, config.authentication_jwt_secret, {
             expiresIn: '30m',
-            issuer: 'continuum-auth',
+            issuer: 'continuum-adaptor',
         });
 
         try {

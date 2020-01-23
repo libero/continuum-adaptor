@@ -1,4 +1,4 @@
-# continuum-auth
+# continuum-adaptor
 
 ## Configuration
 
@@ -10,7 +10,7 @@ cp config/config.example.json config/config.json
 
 ## Setup
 
-Create a database called 'continuum-auth', then run the migrations:
+Create a database called 'continuum-adaptor', then run the migrations:
 
 ```sh
 yarn migrate run
@@ -33,7 +33,7 @@ A connector service so that eLife's deployment of libero can authenticate using 
 signed jwt token appended to the URL. This token will then be used by the client to authenticate it's subsequent HTTP requests with other services in the system. This token will contain some information
 about the user, provided by the `profiles` service.
 
-## Things to define for continuum-auth to be useful long term
+## Things to define for continuum-adaptor to be useful long term
 
 - We need to stabilise the interface for the auth token, so that we can swap out this service with something else
 - We need some way to manually test the login flow from end to end. This means that it needs to be:
