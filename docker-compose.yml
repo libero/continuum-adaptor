@@ -1,6 +1,6 @@
 version: '3'
 services:
-  continuum-auth:
+  continuum-adaptor:
     image: node:10
     ports:
       - "${CONTINUUM_AUTH_PORT:-3001}:3001"

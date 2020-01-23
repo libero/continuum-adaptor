@@ -136,7 +136,7 @@ describe('Authenticate Handler', () => {
             const decoded = verify(token, config.authentication_jwt_secret) as object;
 
             const expectedPayload = {
-                iss: 'continuum-auth',
+                iss: 'continuum-adaptor',
                 sub: 'b555542f-d846-42d7-a6d4-bcfa6529528c',
                 issuer: 'libero',
             };

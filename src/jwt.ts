@@ -4,7 +4,7 @@ import { InfraLogger as logger } from './logger';
 
 export const encode = (secret: string, payload: object, expiresIn: string): string => {
     logger.trace('jwtEncode');
-    return sign(payload, secret, { expiresIn, issuer: 'continuum-auth' });
+    return sign(payload, secret, { expiresIn, issuer: 'continuum-adaptor' });
 };
 
 export interface JournalAuthToken {
