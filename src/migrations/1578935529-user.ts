@@ -1,16 +1,18 @@
-import * as Knex from 'knex';
+// This migration is temporarily disabled until we split the legacy xpub database into multiple ones for each service
 
-export default {
-    up(knex: Knex): Knex.SchemaBuilder {
-        return knex.schema.createTable('user', (table: Knex.TableBuilder) => {
-            table.uuid('id').unique();
-            table.timestamp('created').defaultTo(knex.fn.now());
-            table.timestamp('updated').defaultTo(knex.fn.now());
-            table.string('default_identity', 32);
-        });
-    },
+// import * as Knex from 'knex';
 
-    down(knex: Knex): Knex.SchemaBuilder {
-        return knex.schema.dropTable('user');
-    },
-};
+// export default {
+//     up(knex: Knex): Knex.SchemaBuilder {
+//         return knex.schema.createTable('user', (table: Knex.TableBuilder) => {
+//             table.uuid('id').unique();
+//             table.timestamp('created').defaultTo(knex.fn.now());
+//             table.timestamp('updated').defaultTo(knex.fn.now());
+//             table.string('default_identity', 32);
+//         });
+//     },
+
+//     down(knex: Knex): Knex.SchemaBuilder {
+//         return knex.schema.dropTable('user');
+//     },
+// };
