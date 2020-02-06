@@ -7,7 +7,7 @@ export class KnexUserRepository implements UserRepository {
     public constructor(private readonly knex: Knex<{}, unknown[]>) {}
     private async findIdentity(profileId: string): Promise<Identity> {
         const identity = await this.knex
-            .withSchema('public')
+            .withSchema('xpublegacy')
             .first(
                 'user_id as userId',
                 'id',
@@ -26,7 +26,7 @@ export class KnexUserRepository implements UserRepository {
 
     public async findUser(userId: string): Promise<Option<User>> {
         const row = await this.knex
-            .withSchema('public')
+            .withSchema('xpublegacy')
             .first('id', 'created', 'updated', 'default_identity as defaultIdentity')
             .from<User>('user')
             .where('id', userId);
@@ -37,7 +37,7 @@ export class KnexUserRepository implements UserRepository {
 
         const identities = await this.knex
             .select('id', 'created', 'updated', 'type', 'identifier', 'display_name as displayName', 'email')
-            .withSchema('public')
+            .withSchema('xpublegacy')
             .from<Identity>('identity')
             .where('user_id', userId);
 
@@ -53,7 +53,7 @@ export class KnexUserRepository implements UserRepository {
 
     private async createUser(): Promise<string> {
         const userIds = await this.knex
-            .withSchema('public')
+            .withSchema('xpublegacy')
             .insert(
                 {
                     default_identity: 'elife',
@@ -68,7 +68,7 @@ export class KnexUserRepository implements UserRepository {
 
     private async createIdentity(profileId: string, userId: string): Promise<void> {
         return await this.knex
-            .withSchema('public')
+            .withSchema('xpublegacy')
             .insert({
                 user_id: userId,
                 identifier: profileId,

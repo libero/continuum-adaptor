@@ -23,7 +23,6 @@ test_integration:
 	./.scripts/docker/wait-healthy.sh test_rabbitmq 60
 	./.scripts/docker/wait-healthy.sh test_reviewer_mocks 60
 	./.scripts/docker/wait-healthy.sh test_continuum_adaptor 60
-	${DOCKER_COMPOSE_TEST} exec continuum-adaptor node dist/migrate.js run
 	CONFIG_PATH=./tests/config/continuum-adaptor.json yarn test:integration
 	- ${DOCKER_COMPOSE_TEST} down
 	
