@@ -47,7 +47,8 @@ services:
       retries: 10
 
   postgres:
-    image: liberoadmin/reviewer-xpub-postgres:latest
+    # image: liberoadmin/reviewer-xpub-postgres:latest
+    image: libero/reviewer-xpub-postgres:local
     container_name: test_postgres
     ports:
       - "5432:5432"
