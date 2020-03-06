@@ -58,17 +58,16 @@ export const GetCurrentUser = (
 
         const maybePerson = await peopleRepo.getPersonById(identity.identifier);
 
-        if (maybePerson.isEmpty()) {
-            throw new Unauthorized('No roles found');
+        // if no entry is found, set the role to user
+        let role = 'user';
+
+        if (!maybePerson.isEmpty()) {
+            role = maybePerson.get().type.id;
         }
-
-        const profile = maybeProfile.get();
-        const person = maybePerson.get();
-
         const payload = {
             id: userId,
-            name: profile.name.preferred,
-            role: person.type.id,
+            name: maybeProfile.get().name.preferred,
+            role,
         };
 
         return res.status(200).json(payload);
