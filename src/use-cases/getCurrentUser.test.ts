@@ -212,10 +212,16 @@ describe('Get Current User Handler', (): void => {
             expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('eLife profile not found'));
         });
 
-        it('should return an error info if person not found', async () => {
+        it('should return a user even if person not found', async () => {
             profilesServiceMock.getProfileById.mockImplementation(() => Promise.resolve(Option.of(profile)));
             peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(undefined)));
             userRepoMock.findUser.mockImplementation(() => Promise.resolve(Option.of(user)));
+
+            const expectedUser = {
+                id: 'id',
+                name: 'Joe Bloggs',
+                role: 'user',
+            };
 
             handler(
                 requestMock as Request,
@@ -224,9 +230,9 @@ describe('Get Current User Handler', (): void => {
             );
             await flushPromises();
 
-            expect(responseMock.status).not.toHaveBeenCalled();
-            expect(responseMock.json).not.toHaveBeenCalled();
-            expect(nextFunctionMock).toHaveBeenCalledWith(new Unauthorized('No roles found'));
+            expect(responseMock.status).toHaveBeenCalled();
+            expect(responseMock.json).toHaveBeenCalled();
+            expect(responseMock.json.mock.calls[0][0]).toMatchObject(expectedUser);
         });
     });
 });
