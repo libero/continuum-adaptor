@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  test-build-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: 'true'
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.15'
+      - uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-yarn-client-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-client-
+
+      - name: Lint & Test
+        run: |
+          make lint
+          make test
+
+      - name: Build
+        run: make build
+
+      - name: Integration Tests
+        run: make test_integration
+
+      - name: Push Images if on master
+        if: github.ref == 'refs/heads/master'
+        run: |
+          .scripts/github/retag-and-push.sh continuum-adaptor ${IMAGE_TAG}
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
