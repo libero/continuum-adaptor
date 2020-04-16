@@ -13,8 +13,8 @@ jobs:
         with:
           submodules: 'true'
       - run: |
-          docker pull liberoadmin/audit:master-${{ github.sha }}
-          .scripts/github/retag-and-push.sh continuum-adaptor master-${{ github.sha }}
+          docker pull liberoadmin/audit:master-${GITHUB_SHA::8}
+          .scripts/github/retag-and-push.sh continuum-adaptor master-${GITHUB_SHA::8}
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
