@@ -12,7 +12,9 @@ services:
       retries: 3
     command: ["bash", "-c", "yarn && yarn run start:dev"]
     environment: 
-      CONFIG_PATH: /etc/reviewer/config.json
+      - CONFIG_PATH=/etc/reviewer/config.json
+      - ELIFE_API_GATEWAY_SECRET=${ELIFE_API_GATEWAY_SECRET}
+
     volumes:
       - ./:/src/:z
       - ./config/:/etc/reviewer/:z
