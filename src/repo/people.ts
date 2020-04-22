@@ -21,9 +21,11 @@ export interface PeopleRepository {
 
 export class PeopleService implements PeopleRepository {
     private url: string;
+    private token: string;
 
-    constructor(url: string) {
+    constructor({ url, token }: { url: string; token: string }) {
         this.url = url;
+        this.token = token;
     }
 
     private makePersonUrl(personId: string): string {
@@ -31,8 +33,15 @@ export class PeopleService implements PeopleRepository {
     }
 
     public async getPersonById(personId: string): Promise<Option<Person>> {
+        const url = this.makePersonUrl(personId);
+        const args = { headers: {} };
+
+        if (this.token.length > 0) {
+            args.headers['Authorization'] = `${this.token}`;
+        }
+        console.log(this.token);
         return Option.of(
-            await fetch(this.makePersonUrl(personId))
+            await fetch(url, args)
                 .then(checkStatus)
                 .then(queryResponse => {
                     logger.trace('lookupPersonOk', { personId });

@@ -11,6 +11,8 @@ import { HealthCheck, Authenticate, GetCurrentUser } from './use-cases';
 import { setupEventBus } from './event-bus';
 import config from './config';
 
+const token = process.env.ELIFE_API_GATEWAY_SECRET || '';
+
 const init = async (): Promise<void> => {
     logger.info('Starting service');
     // Start the application
@@ -19,7 +21,7 @@ const init = async (): Promise<void> => {
 
     const userRepository = new KnexUserRepository(knexConnection);
     const profileService = new ProfilesService(`${config.continuum_api_url}/profiles`);
-    const peopleService = new PeopleService(`${config.continuum_api_url}/people`);
+    const peopleService = new PeopleService({ url: `${config.continuum_api_url}/people`, token });
 
     // setup event bus
     const eventBus = await setupEventBus({ url: config.rabbitmq_url } as EventConfig);
