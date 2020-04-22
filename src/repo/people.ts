@@ -39,7 +39,6 @@ export class PeopleService implements PeopleRepository {
         if (this.token.length > 0) {
             args.headers['Authorization'] = `${this.token}`;
         }
-        console.log(this.token);
         return Option.of(
             await fetch(url, args)
                 .then(checkStatus)
