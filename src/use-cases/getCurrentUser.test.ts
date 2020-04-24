@@ -119,7 +119,8 @@ describe('Get Current User Handler', (): void => {
                 preferred: 'Joe Bloggs',
                 index: 'Bloggs, Joe',
             },
-            emailAddresses: ['joe@example.com'],
+            emailAddresses: [{ value: 'joe@example.com' }],
+            affiliations: [{ value: { name: ['A', 'B'] } }],
         };
         const person = {
             id: 'profile_id',
@@ -148,6 +149,8 @@ describe('Get Current User Handler', (): void => {
             const expectedUser = {
                 id: 'id',
                 name: 'Joe Bloggs',
+                email: 'joe@example.com',
+                aff: 'A',
                 role: 'reviewing-editor',
             };
 

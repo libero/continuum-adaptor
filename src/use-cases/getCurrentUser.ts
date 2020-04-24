@@ -60,16 +60,34 @@ export const GetCurrentUser = (
 
         // if no entry is found, set the role to user
         let role = 'user';
+        let name = '';
+        let email = '';
+        let aff = '';
 
         if (!maybePerson.isEmpty()) {
             role = maybePerson.get().type.id;
         }
+        if (!maybeProfile.isEmpty()) {
+            const profile = maybeProfile.get();
+            name = profile.name.preferred;
+
+            // email and affiliations may not be returned if there is no API token
+            if (profile.emailAddresses) {
+                email = profile.emailAddresses[0]?.value;
+            }
+
+            if (profile.affiliations) {
+                aff = profile.affiliations[0]?.value?.name[0];
+            }
+        }
+
         const payload = {
             id: userId,
-            name: maybeProfile.get().name.preferred,
+            name,
+            email,
+            aff,
             role,
         };
-
         return res.status(200).json(payload);
     } catch (error) {
         DomainLogger.info(error.stack);

@@ -19,6 +19,11 @@ export interface UserProfile {
     emailAddresses: Array<{
         value: string;
     }>;
+    affiliations: Array<{
+        value: {
+            name: Array<string>;
+        };
+    }>;
 }
 
 export class ProfilesService implements ProfilesRepo {

@@ -10,5 +10,30 @@
           "value": "test@example.com"
       }
   ],
-  "affiliations": []
+  "affiliations": [
+    {
+      "access": "public",
+      "value": {
+        "name": [
+          "eLife Sciences Publications Ltd"
+        ],
+        "address": {
+          "formatted": [
+            "Cambridge",
+            "Cambridgeshire",
+            "United Kingdom of Great Britain and Northern Ireland"
+          ],
+          "components": {
+            "locality": [
+              "Cambridge"
+            ],
+            "area": [
+              "Cambridgeshire"
+            ],
+            "country": "United Kingdom of Great Britain and Northern Ireland"
+          }
+        }
+      }
+    }
+  ]
 }
