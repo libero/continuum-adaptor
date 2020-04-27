@@ -7,6 +7,7 @@ DOCKER_COMPOSE_BUILD = IMAGE_TAG=${IMAGE_TAG} docker-compose -f docker-compose.b
 
 setup:
 	-@ git submodule update --init --recursive
+	-@ docker network create reviewer > /dev/null 2>&1 || true
 
 start:
 	${DOCKER_COMPOSE} up
