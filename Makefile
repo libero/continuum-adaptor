@@ -1,9 +1,18 @@
 
 IMAGE_TAG ?= "local"
 
-DOCKER_COMPOSE = IMAGE_TAG=${IMAGE_TAG} docker-compose -f docker-compose.build.yml
-
+DOCKER_COMPOSE = IMAGE_TAG=${IMAGE_TAG} docker-compose -f docker-compose.yml
 DOCKER_COMPOSE_TEST = IMAGE_TAG=${IMAGE_TAG} docker-compose -f docker-compose.test.yml
+DOCKER_COMPOSE_BUILD = IMAGE_TAG=${IMAGE_TAG} docker-compose -f docker-compose.build.yml
+
+setup:
+	-@ git submodule update --init --recursive
+
+start:
+	${DOCKER_COMPOSE} up
+
+stop:
+	${DOCKER_COMPOSE} down
 
 get_deps:
 	yarn
@@ -25,4 +34,4 @@ test_integration:
 	- ${DOCKER_COMPOSE_TEST} down
 	
 build:
-	${DOCKER_COMPOSE} build continuum-adaptor 
+	${DOCKER_COMPOSE_BUILD} build continuum-adaptor 

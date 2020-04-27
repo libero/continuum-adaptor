@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { Config as KnexConfig } from 'knex';
 
 export interface Config {
@@ -12,10 +11,24 @@ export interface Config {
     knex: KnexConfig;
 }
 
-const configPath = process.env.CONFIG_PATH ? process.env.CONFIG_PATH : '/etc/reviewer/config.json';
-const thisConfig: Config = JSON.parse(readFileSync(configPath, 'utf8'));
-thisConfig.continuum_jwt_secret = process.env.CONTINUUM_LOGIN_JWT_SECRET
-    ? (process.env.CONTINUUM_LOGIN_JWT_SECRET as string)
-    : thisConfig.continuum_jwt_secret;
+const appConfig: Config = {
+    port: 3000,
+    rabbitmq_url: process.env.RABBITMQ_URL || '',
+    login_url: process.env.LOGIN_URL || '',
+    login_return_url: process.env.LOGIN_RETURN_URL || '',
+    authentication_jwt_secret: process.env.AUTHENTICATION_JWT_SECRET || '',
+    continuum_jwt_secret: process.env.CONTINUUM_JWT_SECRET || '',
+    continuum_api_url: process.env.CONTINUUM_API_URL || '',
+    knex: {
+        client: 'pg',
+        connection: {
+            host: process.env.DATABASE_HOST,
+            database: process.env.DATABASE_NAME,
+            password: process.env.DATABASE_PASSWORD,
+            user: process.env.DATABASE_USER,
+            port: Number(process.env.DATABASE_PORT),
+        },
+    },
+};
 
-export default thisConfig;
+export default appConfig;

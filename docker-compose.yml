@@ -1,20 +1,31 @@
 version: '3'
 services:
   continuum-adaptor:
-    image: node:10
-    ports:
-      - "${CONTINUUM_AUTH_PORT:-3001}:3001"
+    image: node:12-alpine@sha256:5646d1e5bc470500414feb3540186c02845db0e0e1788621c271fbf3a0c1830d
     working_dir: "/src"
-    healthcheck:
-      test: "curl localhost:3001/health"
-      interval: 1m
-      timeout: 10s
-      retries: 3
-    command: ["bash", "-c", "yarn && yarn run start:dev"]
+    command: ["sh", "-c", "yarn && yarn run start:dev"]
     environment: 
-      - CONFIG_PATH=/etc/reviewer/config.json
-      - ELIFE_API_GATEWAY_SECRET=${ELIFE_API_GATEWAY_SECRET}
-
+      PORT: 3000
+      RABBITMQ_URL: rabbitmq
+      LOGIN_URL: http://localhost:9000/submit
+      LOGIN_RETURN_URL: http://localhost:9000/login
+      AUTHENTICATION_JWT_SECRET: super_secret_jam
+      CONTINUUM_JWT_SECRET: some_secret_from_journal
+      CONTINUUM_API_URL: http://reviewer-mocks:3003
+      DATABASE_NAME: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      ELIFE_API_GATEWAY_SECRET: ${ELIFE_API_GATEWAY_SECRET}
+    networks:
+      - "reviewer"
     volumes:
       - ./:/src/:z
-      - ./config/:/etc/reviewer/:z
+
+networks:
+  reviewer:
+    external:
+      name: "reviewer"
+
+
