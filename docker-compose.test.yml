@@ -4,13 +4,23 @@ services:
     image: libero/continuum-adaptor:${IMAGE_TAG:-local}
     container_name: test_continuum_adaptor
     ports:
-      - "${AUTHENTICATION_PORT:-3001}:3001"
+      - "3001:3000"
     environment: 
-      CONFIG_PATH: /etc/reviewer/config.json
-    volumes:
-      - ./tests/config/continuum-adaptor.json:/etc/reviewer/config.json
+      PORT: 3000
+      RABBITMQ_URL: rabbitmq
+      LOGIN_URL: http://localhost:9000/submit
+      LOGIN_RETURN_URL: http://localhost:9000/login
+      AUTHENTICATION_JWT_SECRET: super_secret_jam
+      CONTINUUM_JWT_SECRET: some_secret_from_journal
+      CONTINUUM_API_URL: http://reviewer-mocks:3003
+      DATABASE_NAME: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      ELIFE_API_GATEWAY_SECRET: ${ELIFE_API_GATEWAY_SECRET}
     healthcheck:
-      test: 'echo -e "GET /health\n\n" | nc localhost ${AUTHENTICATION_PORT:-3001}'
+      test: 'echo -e "GET /health\n\n" | nc localhost 3000'
       interval: 10s
       timeout: 10s
       retries: 3

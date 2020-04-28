@@ -4,6 +4,11 @@ services:
     image: node:12-alpine@sha256:5646d1e5bc470500414feb3540186c02845db0e0e1788621c271fbf3a0c1830d
     working_dir: "/src"
     command: ["sh", "-c", "yarn && yarn run start:dev"]
+    healthcheck:
+      test: "curl localhost:3001/health"
+      interval: 1m
+      timeout: 10s
+      retries: 3
     environment: 
       PORT: 3000
       RABBITMQ_URL: rabbitmq
