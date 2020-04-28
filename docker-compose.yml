@@ -25,6 +25,8 @@ services:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       ELIFE_API_GATEWAY_SECRET: ${ELIFE_API_GATEWAY_SECRET}
+    networks:
+      - "reviewer"
     volumes:
       - ./:/src/:z
 

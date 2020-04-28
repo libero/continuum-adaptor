@@ -13,8 +13,8 @@ start:
 	${DOCKER_COMPOSE} up
 
 stop:
-	${DOCKER_COMPOSE} down
 	${DOCKER_COMPOSE_TEST} down
+	${DOCKER_COMPOSE} down
 
 get_deps:
 	yarn
