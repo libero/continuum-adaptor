@@ -12,7 +12,7 @@ export interface Config {
 }
 
 const appConfig: Config = {
-    port: 3000,
+    port: Number(process.env.PORT),
     rabbitmq_url: process.env.RABBITMQ_URL || '',
     login_url: process.env.LOGIN_URL || '',
     login_return_url: process.env.LOGIN_RETURN_URL || '',
