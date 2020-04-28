@@ -14,6 +14,7 @@ start:
 
 stop:
 	${DOCKER_COMPOSE} down
+	${DOCKER_COMPOSE_TEST} down
 
 get_deps:
 	yarn
