@@ -48,6 +48,8 @@ describe('GetCurrentUser', (): void => {
             expect(status).toBe(200);
             expect(data.id).toHaveLength(36);
             expect(data.name).toBe('TEST_PREFERRED_NAME');
+            expect(data.email).toBe('test@example.com');
+            expect(data.aff).toBe('eLife Sciences Publications Ltd');
             expect(data.role).toBe('author');
         } finally {
         }
