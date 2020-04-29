@@ -15,7 +15,7 @@ services:
       PORT: 3001
       RABBITMQ_URL: rabbitmq
       LOGIN_URL: http://localhost:9000/submit
-      LOGIN_RETURN_URL: http://localhost:3003/redirect_location_for_intergration_test
+      LOGIN_RETURN_URL: http://localhost:9000/login
       AUTHENTICATION_JWT_SECRET: super_secret_jam
       CONTINUUM_JWT_SECRET: some_secret_from_journal
       CONTINUUM_API_URL: http://reviewer-mocks:3003
