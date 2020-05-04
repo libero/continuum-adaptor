@@ -7,7 +7,7 @@ services:
     ports:
       - '3001:3001'
     healthcheck:
-      test: "curl localhost:3001/health"
+      test: "echo -e 'GET /health\n\n' | nc localhost 3001"
       interval: 1m
       timeout: 10s
       retries: 3
