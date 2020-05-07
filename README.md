@@ -24,6 +24,7 @@ yarn migrate rollback
 Migration status
 ```sh
 yarn migrate status
+```
 
 ## Overview
 
