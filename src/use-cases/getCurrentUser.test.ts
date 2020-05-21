@@ -7,7 +7,7 @@ import * as jwt from '../jwt';
 import { Config } from '../config';
 import { GetCurrentUser } from './getCurrentUser';
 import { ProfilesRepo } from '../repo/profiles';
-import { PeopleRepository, Person } from '../repo/people';
+import { Person } from '../repo/people';
 import { UserRepository, User, Identity } from '../domain/types';
 
 jest.mock('../logger');
@@ -57,7 +57,6 @@ describe('Get Current User Handler', (): void => {
             config,
             (userRepoMock as unknown) as UserRepository,
             profilesServiceMock as ProfilesRepo,
-            peopleServiceMock as PeopleRepository,
         );
     });
 
@@ -151,7 +150,7 @@ describe('Get Current User Handler', (): void => {
                 name: 'Joe Bloggs',
                 email: 'joe@example.com',
                 aff: 'A',
-                role: 'reviewing-editor',
+                role: 'author',
             };
 
             handler(
@@ -223,7 +222,7 @@ describe('Get Current User Handler', (): void => {
             const expectedUser = {
                 id: 'id',
                 name: 'Joe Bloggs',
-                role: 'user',
+                role: 'author',
             };
 
             handler(

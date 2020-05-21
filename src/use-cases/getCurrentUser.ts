@@ -3,16 +3,14 @@ import { Unauthorized } from 'http-errors';
 import { decodeToken, LiberoAuthToken } from '../jwt';
 import { Config } from '../config';
 import { ProfilesRepo } from '../repo/profiles';
-import { PeopleRepository } from '../repo/people';
 import { UserRepository } from '../domain/types';
 import { DomainLogger } from '../logger';
 
-export const GetCurrentUser = (
-    config: Config,
-    userRepo: UserRepository,
-    profilesRepo: ProfilesRepo,
-    peopleRepo: PeopleRepository,
-) => async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+export const GetCurrentUser = (config: Config, userRepo: UserRepository, profilesRepo: ProfilesRepo) => async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+): Promise<void | Response> => {
     try {
         const authHeader = req.header('Authorization');
 
@@ -56,17 +54,11 @@ export const GetCurrentUser = (
             throw new Unauthorized('eLife profile not found');
         }
 
-        const maybePerson = await peopleRepo.getPersonById(identity.identifier);
-
-        // if no entry is found, set the role to user
-        let role = 'user';
+        const role = 'author';
         let name = '';
         let email = '';
         let aff = '';
 
-        if (!maybePerson.isEmpty()) {
-            role = maybePerson.get().type.id;
-        }
         if (!maybeProfile.isEmpty()) {
             const profile = maybeProfile.get();
             name = profile.name.preferred;

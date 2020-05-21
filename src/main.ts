@@ -37,7 +37,7 @@ const init = async (): Promise<void> => {
     // This is how we do dependency injection at the moment
     app.get('/health', HealthCheck());
     app.get('/authenticate/:token?', Authenticate(config, userRepository, eventBus));
-    app.get('/current-user', GetCurrentUser(config, userRepository, profileService, peopleService));
+    app.get('/current-user', GetCurrentUser(config, userRepository, profileService));
     app.get('/editors', GetEditors(config, peopleService));
     app.use(errorHandler);
 
