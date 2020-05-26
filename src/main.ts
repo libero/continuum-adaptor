@@ -1,5 +1,6 @@
 import * as express from 'express';
 import { Express, Request, Response } from 'express';
+import * as http from 'http';
 import * as knex from 'knex';
 import errorHandler from './middleware/error-handler';
 import { InfraLogger as logger } from './logger';
@@ -11,7 +12,7 @@ import config from './config';
 
 const token = process.env.ELIFE_API_GATEWAY_SECRET || '';
 
-const init = async (): Promise<void> => {
+const init = async (): Promise<http.Server> => {
     logger.info(`Starting service on port ${config.port}`);
     logger.info(`config.login_url: ${config.login_url}`);
     logger.info(`config.login_return_url: ${config.login_return_url}`);
@@ -39,6 +40,23 @@ const init = async (): Promise<void> => {
 
     const server = app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));
     server.on('close', async () => await knexConnection.destroy());
+    return server;
 };
 
-init();
+const main = async (): Promise<void> => {
+    const serverHandle = await init();
+
+    process.on('SIGINT', () => {
+        serverHandle.close(() => {
+            process.exit(0);
+        });
+    });
+
+    process.on('SIGTERM', () => {
+        serverHandle.close(() => {
+            process.exit(0);
+        });
+    });
+};
+
+main();
