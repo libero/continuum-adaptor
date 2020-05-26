@@ -6,7 +6,6 @@ import { Authenticate } from './authenticate';
 import { verify } from 'jsonwebtoken';
 import * as jwt from '../jwt';
 import { Config } from '../config';
-import { LiberoEventType } from '@libero/event-types';
 import { Config as KnexConfig } from 'knex';
 
 jest.mock('../logger');
@@ -16,7 +15,6 @@ jest.mock('fs', (): object => ({
 
 const config: Config = {
     port: 3000,
-    rabbitmq_url: 'rabbitmq',
     login_url: 'login-url',
     login_return_url: 'login-return',
     authentication_jwt_secret: 'ca-secret',
@@ -27,7 +25,6 @@ const config: Config = {
 
 describe('Authenticate Handler', () => {
     let userRepoMock;
-    let eventBusMock;
     let requestMock;
     let responseMock;
     let nextFunctionMock;
@@ -36,11 +33,6 @@ describe('Authenticate Handler', () => {
     beforeEach(() => {
         userRepoMock = {
             findOrCreateUserWithProfileId: jest.fn(),
-        };
-        eventBusMock = {
-            init: jest.fn(),
-            publish: jest.fn(),
-            subscribe: jest.fn(),
         };
         requestMock = {
             params: { token: 'token' },
@@ -68,7 +60,7 @@ describe('Authenticate Handler', () => {
      */
     describe('with invalid token', () => {
         it('should return an error when no token provided', async () => {
-            const handler = Authenticate(config, userRepoMock, eventBusMock);
+            const handler = Authenticate(config, userRepoMock);
             requestMock.params = {};
 
             handler(
@@ -87,7 +79,7 @@ describe('Authenticate Handler', () => {
         it('should throw error with invalid token', async () => {
             decodeJournalTokenMock.mockImplementation(() => None);
 
-            const handler = Authenticate(config, userRepoMock, eventBusMock);
+            const handler = Authenticate(config, userRepoMock);
 
             handler(
                 requestMock as Request,
@@ -116,7 +108,7 @@ describe('Authenticate Handler', () => {
         });
 
         it('should redirect to correct url and contain an encoded token', async () => {
-            const handler = Authenticate(config, userRepoMock, eventBusMock);
+            const handler = Authenticate(config, userRepoMock);
 
             handler(
                 requestMock as Request,
@@ -153,25 +145,6 @@ describe('Authenticate Handler', () => {
             expect(decoded['jti']).toHaveLength(36);
 
             expect(decoded).toMatchObject(expectedPayload);
-        });
-
-        it('should send logged in event for audit', async () => {
-            const handler = Authenticate(config, userRepoMock, eventBusMock);
-
-            handler(
-                requestMock as Request,
-                (responseMock as unknown) as Response,
-                (nextFunctionMock as unknown) as NextFunction,
-            );
-
-            await flushPromises();
-
-            const auditEvent = eventBusMock.publish.mock.calls[0][0];
-            expect(eventBusMock.publish).toHaveBeenCalledTimes(1);
-            expect(auditEvent.eventType).toBe(LiberoEventType.userLoggedInIdentifier);
-            expect(auditEvent.payload.userId).toHaveLength(36);
-            expect(auditEvent.payload.timestamp instanceof Date).toBeTruthy();
-            expect(auditEvent.payload.result).toBe('authorized');
         });
     });
 });

@@ -11,9 +11,8 @@ services:
       interval: 1m
       timeout: 10s
       retries: 3
-    environment: 
+    environment:
       PORT: 3001
-      RABBITMQ_URL: rabbitmq
       LOGIN_URL: http://localhost:9000/submit
       LOGIN_RETURN_URL: http://localhost:9000/login
       AUTHENTICATION_JWT_SECRET: super_secret_jam

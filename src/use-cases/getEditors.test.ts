@@ -12,7 +12,6 @@ jest.mock('../logger');
 
 const config: Config = {
     port: 3000,
-    rabbitmq_url: 'rabbitmq',
     login_url: 'login-url',
     login_return_url: 'login-return',
     authentication_jwt_secret: 'ca-secret',
