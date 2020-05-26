@@ -37,6 +37,7 @@ test_integration: ## run integration tests
 	./.scripts/docker/wait-healthy.sh test_reviewer_mocks 60
 	./.scripts/docker/wait-healthy.sh test_continuum_adaptor 60
 	CONFIG_PATH=./tests/config/continuum-adaptor.json yarn test:integration
+	- ${DOCKER_COMPOSE_TEST} down
 
 build: ## build image for production
 	${DOCKER_COMPOSE_BUILD} build continuum-adaptor
