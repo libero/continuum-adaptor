@@ -1,13 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { v4 } from 'uuid';
 import { Unauthorized } from 'http-errors';
-import { RabbitEventBus } from '@libero/event-bus';
-import { UserLoggedInEvent, UserLoggedInPayload } from '@libero/event-types';
 import { UserRepository } from '../domain/types';
 import { Config } from '../config';
 import { encode, decodeJournalToken, LiberoAuthToken } from '../jwt';
 
-export const Authenticate = (config: Config, userService: UserRepository, eventBus: RabbitEventBus) => async (
+export const Authenticate = (config: Config, userService: UserRepository) => async (
     req: Request,
     res: Response,
     next: NextFunction,
@@ -41,15 +39,6 @@ export const Authenticate = (config: Config, userService: UserRepository, eventB
         } as LiberoAuthToken;
 
         const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
-
-        const eventPayload: UserLoggedInPayload = {
-            userId: user.id,
-            result: 'authorized',
-            timestamp: new Date(),
-        };
-
-        // send audit logged in message
-        eventBus.publish(new UserLoggedInEvent(eventPayload));
 
         return res.redirect(`${config.login_return_url}#${encodedPayload}`);
     } catch (error) {
