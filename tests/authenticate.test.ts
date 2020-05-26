@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { RabbitEventBus } from '@libero/event-bus';
-import { LiberoEventType } from '@libero/event-types';
-import waitForExpect from 'wait-for-expect';
 import { login, LoginReturnValue, config } from './utils';
 
 describe('Authenticate', (): void => {
@@ -44,31 +41,5 @@ describe('Authenticate', (): void => {
             expect(response.status).toBe(401);
             expect(response.data).toEqual({ ok: false, msg: 'Invalid token' });
         });
-    });
-
-    it('sends the apropriate message to the message bus when user is authenticated', async (done): Promise<void> => {
-        jest.setTimeout(25000); // to avoid jest timeout on CI env
-        const url = `amqp://localhost`;
-        const eventBus = new RabbitEventBus({ url }, [LiberoEventType.userLoggedInIdentifier], 'continuum-adaptor');
-        await eventBus.connect();
-        let payload;
-        await eventBus.subscribe(
-            LiberoEventType.userLoggedInIdentifier,
-            (event): Promise<boolean> => {
-                payload = event.payload['result'];
-                return Promise.resolve(true);
-            },
-        );
-        await login();
-
-        await waitForExpect(
-            async () => {
-                expect(payload).toBe('authorized');
-                await eventBus.destroy();
-                done();
-            },
-            23000,
-            1000,
-        );
     });
 });

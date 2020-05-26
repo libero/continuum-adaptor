@@ -5,9 +5,8 @@ services:
     container_name: test_continuum_adaptor
     ports:
       - "3001:3001"
-    environment: 
+    environment:
       PORT: 3001
-      RABBITMQ_URL: rabbitmq
       LOGIN_URL: http://localhost:9000/submit
       LOGIN_RETURN_URL: http://localhost:3003/redirect_location_for_intergration_test
       AUTHENTICATION_JWT_SECRET: super_secret_jam
@@ -25,7 +24,6 @@ services:
       timeout: 10s
       retries: 3
     depends_on:
-      - rabbitmq
       - reviewer-mocks
 
   reviewer-mocks:
@@ -33,33 +31,21 @@ services:
     container_name: test_reviewer_mocks
     ports:
       - "${REVIEWER_MOCKS_PORT:-3003}:3003"
-    environment: 
+    environment:
       DATA_DIRECTORY_PATH: "/etc/mock-data/"
     volumes:
       - ./tests/config/reviewer-mocks.json:/etc/reviewer/config.json:z
-      - ./tests/mock-data:/etc/mock-data/ 
+      - ./tests/mock-data:/etc/mock-data/
     healthcheck:
       test: 'echo -e "GET /health\n\n" | nc localhost ${REVIEWER_MOCKS_PORT:-3003}'
       interval: 10s
       timeout: 10s
       retries: 3
 
-  rabbitmq:
-    image: rabbitmq:3-alpine
-    container_name: test_rabbitmq
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    healthcheck:
-      test: [ "CMD", "rabbitmqctl", "status" ]
-      interval: 2s
-      timeout: 30s
-      retries: 10
-
   postgres:
     image: liberoadmin/reviewer-xpub-postgres:latest
     container_name: test_postgres
-    environment: 
+    environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

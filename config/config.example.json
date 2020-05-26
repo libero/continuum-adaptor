@@ -1,6 +1,5 @@
 {
     "port": 3001,
-    "rabbitmq_url": "rabbitmq",
     "login_url": "http://localhost:9000/submit",
     "login_return_url": "http://localhost:9000/login",
     "authentication_jwt_secret": "super_secret_jam",

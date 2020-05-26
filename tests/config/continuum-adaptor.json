@@ -1,6 +1,5 @@
 {
     "port": 3001,
-    "rabbitmq_url": "rabbitmq",
     "login_url": "",
     "login_return_url": "http://localhost:3003/redirect_location_for_intergration_test",
     "authentication_jwt_secret": "super_secret_jam",
