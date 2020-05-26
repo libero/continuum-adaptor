@@ -4,6 +4,7 @@ import { Unauthorized } from 'http-errors';
 import { UserRepository } from '../domain/types';
 import { Config } from '../config';
 import { encode, decodeJournalToken, LiberoAuthToken } from '../jwt';
+import { DomainLogger as logger } from '../logger';
 
 export const Authenticate = (config: Config, userService: UserRepository) => async (
     req: Request,
@@ -32,6 +33,8 @@ export const Authenticate = (config: Config, userService: UserRepository) => asy
         // Get the user object
         const user = await userService.findOrCreateUserWithProfileId(profileId);
 
+        logger.info(`Authenticated ${user.id}`);
+
         const payload = {
             sub: user.id,
             issuer: 'libero',
@@ -39,7 +42,6 @@ export const Authenticate = (config: Config, userService: UserRepository) => asy
         } as LiberoAuthToken;
 
         const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
-
         return res.redirect(`${config.login_return_url}#${encodedPayload}`);
     } catch (error) {
         return next(error);
