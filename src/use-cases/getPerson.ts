@@ -16,7 +16,6 @@ export const GetPerson = (config: Config, peopleRepo: PeopleRepository) => async
         if (!authHeader) {
             throw new Unauthorized('Invalid token');
         }
-
         const token = authHeader.split(' ')[1];
 
         if (!token) {
@@ -37,7 +36,7 @@ export const GetPerson = (config: Config, peopleRepo: PeopleRepository) => async
 
         const payload = await peopleRepo.getPersonById(req.params.id);
 
-        return res.status(200).json(payload.value);
+        return res.status(200).json(payload.get());
     } catch (error) {
         DomainLogger.info(error.stack);
         return next(error);

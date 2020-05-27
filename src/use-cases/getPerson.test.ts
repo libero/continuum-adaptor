@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Config as KnexConfig } from 'knex';
 import * as flushPromises from 'flush-promises';
 import { Config } from '../config';
-import { PeopleRepository } from '../repo/people';
+import { PeopleRepository, Person } from '../repo/people';
 import { GetPerson } from './getPerson';
 
 jest.mock('../logger');
@@ -19,6 +19,18 @@ const config: Config = {
     continuum_api_url: 'somewhere',
     knex: {} as KnexConfig,
 };
+
+const person = {
+    id: 'profile_id',
+    name: {
+        preferred: 'Joe Bloggs',
+        index: 'Bloggs, Joe',
+    },
+    type: {
+        id: 'reviewing-editor',
+        label: 'Reviewing Editor',
+    },
+} as Person;
 
 describe('Get Editors', (): void => {
     let requestMock;
@@ -35,10 +47,11 @@ describe('Get Editors', (): void => {
             status: jest.fn(),
             json: jest.fn(),
         };
-        nextFunctionMock = jest.fn();
         peopleServiceMock = {
             getPersonById: jest.fn(),
         };
+        nextFunctionMock = jest.fn();
+        peopleServiceMock.getPersonById.mockImplementation(() => Promise.resolve(Option.of(person)));
 
         responseMock.status.mockImplementation(() => responseMock);
 
@@ -49,7 +62,7 @@ describe('Get Editors', (): void => {
         const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
         decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as jwt.LiberoAuthToken));
         requestMock.header.mockImplementation(() => 'Bearer: Valid Token');
-        requestMock.params = { id: 'abc' };
+        requestMock.params = { id: 'profile_id' };
 
         handler(
             requestMock as Request,
@@ -61,7 +74,8 @@ describe('Get Editors', (): void => {
 
         expect(responseMock.status).toHaveBeenCalledWith(200);
         expect(responseMock.json).toHaveBeenCalled();
+        expect(responseMock.json.mock.calls[0][0]).toMatchObject(person);
         expect(peopleServiceMock.getPersonById).toHaveBeenCalledTimes(1);
-        expect(peopleServiceMock.getPersonById).toHaveBeenCalledWith('abc');
+        expect(peopleServiceMock.getPersonById).toHaveBeenCalledWith('profile_id');
     });
 });

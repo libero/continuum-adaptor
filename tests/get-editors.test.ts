@@ -12,7 +12,7 @@ const assertAnEditor = (item: object): void => {
 };
 
 describe('GetEditors', (): void => {
-    it.only('returns senior editors if token valid', async (): Promise<void> => {
+    it('returns senior editors if token valid', async (): Promise<void> => {
         const { decodedToken } = await login();
 
         const tokenPayload = {
