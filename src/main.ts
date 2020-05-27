@@ -7,7 +7,7 @@ import { InfraLogger as logger } from './logger';
 import { KnexUserRepository } from './repo/user';
 import { ProfilesService } from './repo/profiles';
 import { PeopleService } from './repo/people';
-import { HealthCheck, Authenticate, GetCurrentUser, GetEditors } from './use-cases';
+import { HealthCheck, Authenticate, GetCurrentUser, GetEditors, GetPerson } from './use-cases';
 import { setupEventBus } from './event-bus';
 import config from './config';
 
@@ -39,6 +39,7 @@ const init = async (): Promise<void> => {
     app.get('/authenticate/:token?', Authenticate(config, userRepository, eventBus));
     app.get('/current-user', GetCurrentUser(config, userRepository, profileService));
     app.get('/editors', GetEditors(config, peopleService));
+    app.get('/people/:id', GetPerson(config, peopleService));
     app.use(errorHandler);
 
     const server = app.listen(config.port, () => logger.info(`Service listening on port ${config.port}`));

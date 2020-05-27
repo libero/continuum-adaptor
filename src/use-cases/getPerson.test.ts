@@ -46,7 +46,7 @@ describe('Get Editors', (): void => {
         handler = GetPerson(config, peopleServiceMock as PeopleRepository);
     });
 
-    it('should return with valid role', async () => {
+    it('should call people service correctly', async () => {
         const decodeTokenMock = jest.spyOn(jwt, 'decodeToken');
         decodeTokenMock.mockImplementation(() => Option.of(({ sub: 'id' } as unknown) as jwt.LiberoAuthToken));
         requestMock.header.mockImplementation(() => 'Bearer: Valid Token');

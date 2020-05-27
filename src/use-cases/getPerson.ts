@@ -37,7 +37,7 @@ export const GetPerson = (config: Config, peopleRepo: PeopleRepository) => async
 
         const payload = await peopleRepo.getPersonById(req.params.id);
 
-        return res.status(200).json(payload);
+        return res.status(200).json(payload.value);
     } catch (error) {
         DomainLogger.info(error.stack);
         return next(error);
