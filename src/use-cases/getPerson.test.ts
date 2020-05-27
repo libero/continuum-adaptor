@@ -1,7 +1,6 @@
 import { Option } from 'funfix';
 import * as jwt from '../jwt';
 import { Request, Response, NextFunction } from 'express';
-// import { Unauthorized, NotFound } from 'http-errors';
 import { Config as KnexConfig } from 'knex';
 import * as flushPromises from 'flush-promises';
 import { Config } from '../config';
