@@ -31,7 +31,7 @@ export class ProfilesService implements ProfilesRepo {
 
     constructor(url: string) {
         this.url = url;
-        logger.info('profilesConnectorInit');
+        logger.info(`ProfilesService: ${url}`);
     }
 
     private makeProfileUrl(profileId: string): string {

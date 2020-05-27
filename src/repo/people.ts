@@ -50,6 +50,7 @@ export class PeopleService implements PeopleRepository {
     constructor({ url, token }: { url: string; token: string }) {
         this.url = url;
         this.token = token;
+        logger.info(`PeopleService: ${url}`);
     }
 
     private makePersonUrl(personId: string): string {
