@@ -12,10 +12,10 @@ export const Authenticate = (config: Config, userService: UserRepository) => asy
     next: NextFunction,
 ): Promise<void> => {
     try {
-        if (!req.params.token) {
+        if (!req.query.token) {
             throw new Unauthorized('No token');
         }
-        const token = req.params['token'];
+        const token = req.query.token as string;
         // Decode the token that's passed to this endpoint from whatever OAuth provider we go with (I'm guessing ORCiD)
         // Somehow resolve that user's identifier/metadata from the profiles service
         // Shove a subset of that information into a JWT

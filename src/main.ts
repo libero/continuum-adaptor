@@ -33,7 +33,9 @@ const init = async (): Promise<http.Server> => {
     });
 
     app.get('/health', HealthCheck());
-    app.get('/authenticate/:token?', Authenticate(config, userRepository));
+    //part of #1123 staging fix. If this doesn't work, revert.
+    //app.get('/authenticate/:token?', Authenticate(config, userRepository));
+    app.get('/authenticate', Authenticate(config, userRepository));
     app.get('/current-user', GetCurrentUser(config, userRepository, profileService));
     app.get('/editors', GetEditors(config, peopleService));
     app.get('/people/:id', GetPerson(config, peopleService));
