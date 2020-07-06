@@ -35,7 +35,7 @@ describe('Authenticate Handler', () => {
             findOrCreateUserWithProfileId: jest.fn(),
         };
         requestMock = {
-            params: { token: 'token' },
+            query: { token: 'token' },
         };
         responseMock = {
             status: jest.fn(),
@@ -61,7 +61,7 @@ describe('Authenticate Handler', () => {
     describe('with invalid token', () => {
         it('should return an error when no token provided', async () => {
             const handler = Authenticate(config, userRepoMock);
-            requestMock.params = {};
+            requestMock.query = {};
 
             handler(
                 requestMock as Request,

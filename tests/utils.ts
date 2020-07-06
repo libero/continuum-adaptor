@@ -25,7 +25,7 @@ export const login = async (): Promise<LoginReturnValue> => {
         config.continuum_jwt_secret,
     );
 
-    const res = await axios.get(`http://localhost:3001/authenticate/${mockJournalToken}`);
+    const res = await axios.get(`http://localhost:3001/authenticate?token=${mockJournalToken}`);
     const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
     const decodedToken = verify(returnedToken, config.authentication_jwt_secret) as object;
 
