@@ -1,0 +1,152 @@
+[
+  {
+    "id": "9000001",
+    "type": {
+      "id": "senior-editor",
+      "label": "Senior Editor"
+    },
+    "name": {
+      "surname": "Tt",
+      "givenNames": "Jj",
+      "preferred": "Jj Tt",
+      "index": "Tt, Jj"
+    },
+    "orcid": "0001-0001-0001-0001",
+    "image": {
+      "uri": "",
+      "alt": "",
+      "source": {
+        "mediaType": "image/jpeg",
+        "uri": "",
+        "filename": "a06w3798.jpg"
+      },
+      "size": {
+        "width": 3600,
+        "height": 2400
+      },
+      "focalPoint": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "profile": [
+      {
+        "text": "Jj Tt is a Professor at Weill Cornell Medicine, New York City, where she heads the Laboratory of Epigenetics and Genome Integrity. Her research currently focuses on the regulation of DNA double strand break repair by chromatin structure and vice versa, as well as mechanisms of aging. During her postdoctoral studies with Dr. James Kadonaga at the University of California, San Diego, she identified the key chromatin assembly factors Anti-silencing Function 1 (Asf1) and characterized Chromatin Assembly Factor 1 (CAF-1) from <i>Drosophila</i>. Dr. Tt’s earlier work revealed that chromatin assembly and disassembly not only regulates S phase events, but also gene expression and the DNA damage response. Dr. Tt was a Leukemia and Lymphoma Society Scholar and was awarded the Tenovus Medal and the Charlotte Friend Woman in Cancer Research Award from the American Association of Cancer Research (AACR).",
+        "type": "paragraph"
+      }
+    ],
+    "research": {
+      "focuses": [
+        "epigenetic regulation",
+        "chromatin",
+        "genome instability",
+        "aging"
+      ],
+      "organisms": [
+        "<i>S. cerevisiae</i>",
+        "mammalian cells"
+      ],
+      "expertises": [
+        {
+          "id": "chromosomes-gene-expression",
+          "name": "Chromosomes and Gene Expression"
+        },
+        {
+          "id": "genetics-genomics",
+          "name": "Genetics and Genomics"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": [
+          "Weill Cornell Medicine"
+        ],
+        "address": {
+          "formatted": [
+            "United States"
+          ],
+          "components": {
+            "country": "United States"
+          }
+        }
+      }
+    ],
+    "competingInterests": "<span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span><span>Previous funding has come from March of Dimes, Susan Komen, the Leukemia and Lymphoma Foundation, NIH, The Emerson Collective, The STARR foundation and CPRIT. Jj Tt serves on the editorial boards of <i>Journal of Biological Chemistry</i>, <i>Molecular and Cellular Biology</i>, <i>Microbial Cell</i>, and <i>Chromatin and Epigenetics</i>.</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>"
+  },
+  {
+    "id": "9000002",
+    "type": {
+      "id": "senior-editor",
+      "label": "Senior Editor"
+    },
+    "name": {
+      "surname": "Ww",
+      "givenNames": "Aa",
+      "preferred": "Aa Ww",
+      "index": "Ww, Aa"
+    },
+    "orcid": "0002-0002-0002-0002",
+    "image": {
+      "uri": "",
+      "alt": "",
+      "source": {
+        "mediaType": "image/jpeg",
+        "uri": "",
+        "filename": "a.jpeg"
+      },
+      "size": {
+        "width": 640,
+        "height": 359
+      },
+      "focalPoint": {
+        "x": 50,
+        "y": 50
+      }
+    },
+    "profile": [
+      {
+        "text": "Aa Ww received her PhD in physics at UCSD working on models of stochastic gene expression. After a graduate fellowship at KITP, she was a Princeton Center for Theoretical Science Fellow, focusing on applying information theory to signal processing in small gene regulatory networks. Currently she is a CNRS researcher at the Ecole Normale Superieure in Paris, interested in a variety of problems in the physics of living systems.",
+        "type": "paragraph"
+      },
+      {
+        "text": "She actively works on development, collective behavior of bird flocks and statistical descriptions of the immune system.",
+        "type": "paragraph"
+      }
+    ],
+    "research": {
+      "focuses": [
+        "systems biology",
+        "gene regulatory networks",
+        "immune system",
+        "population genetics"
+      ],
+      "expertises": [
+        {
+          "id": "computational-systems-biology",
+          "name": "Computational and Systems Biology"
+        },
+        {
+          "id": "physics-living-systems",
+          "name": "Physics of Living Systems"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": [
+          "Ecole Normale Superieure"
+        ],
+        "address": {
+          "formatted": [
+            "France"
+          ],
+          "components": {
+            "country": "France"
+          }
+        }
+      }
+    ],
+    "competingInterests": "Aa Ww is the recipient of a CNRS-Chicago Cooperation Grant, a FACCTS CNRS-Chicago Cooperation Grant, an IRN CNRS Predictability, Adaptability Evolution network collaboration grant, a CNRS-MIT Cooperation Grant, a q-Life Grant \"The physics of repair and silencing foci?, an ERC Proof of Concept Grant \"Automated evaluation and correction of generation bias in immune receptor repertoires\", a DFG CRC \"Predictability in evolution\", an ERC International Training Network QuanTII grant, and an ERC Consolidator Grant \"Statistical physics of immune-viral co-evolution”."
+  }
+]

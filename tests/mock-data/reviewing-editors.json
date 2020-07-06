@@ -1,0 +1,101 @@
+[
+  {
+    "id": "a0000001",
+    "type": {
+      "id": "reviewing-editor",
+      "label": "Reviewing Editor"
+    },
+    "name": {
+      "surname": "Zz",
+      "givenNames": "Ww",
+      "preferred": "Ww Zz",
+      "index": "Zz, Ww"
+    },
+    "research": {
+      "focuses": [
+        "breast cancer",
+        "prostate cancer",
+        "hormonal regulation",
+        "epigenetics",
+        "transcription factors",
+        "genomic profiling"
+      ],
+      "organisms": [
+        "human"
+      ],
+      "expertises": [
+        {
+          "id": "cancer-biology",
+          "name": "Cancer Biology"
+        },
+        {
+          "id": "human-biology-medicine",
+          "name": "Human Biology and Medicine"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": [
+          "Netherlands Cancer Institute"
+        ],
+        "address": {
+          "formatted": [
+            "Netherlands"
+          ],
+          "components": {
+            "country": "Netherlands"
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "a0000002",
+    "type": {
+      "id": "reviewing-editor",
+      "label": "Reviewing Editor"
+    },
+    "name": {
+      "surname": "Zz",
+      "givenNames": "Mía Mm",
+      "preferred": "Mía Mm Zz",
+      "index": "Zz, Mía Mm"
+    },
+    "research": {
+      "focuses": [
+        "environmental microbiology",
+        "microbial communities",
+        "biodiversity",
+        "microbiome",
+        "antimicrobial resistance",
+        "extreme environments"
+      ],
+      "expertises": [
+        {
+          "id": "microbiology-infectious-disease",
+          "name": "Microbiology and Infectious Disease"
+        },
+        {
+          "id": "genetics-genomics",
+          "name": "Genetics and Genomics"
+        }
+      ]
+    },
+    "affiliations": [
+      {
+        "name": [
+          "CorpoGen"
+        ],
+        "address": {
+          "formatted": [
+            "Colombia"
+          ],
+          "components": {
+            "country": "Colombia"
+          }
+        }
+      }
+    ]
+  }
+]
