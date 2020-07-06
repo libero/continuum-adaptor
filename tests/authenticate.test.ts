@@ -37,7 +37,7 @@ describe('Authenticate', (): void => {
     });
 
     it('rejects request when invalid token passed', async (): Promise<void> => {
-        await axios.get('http://localhost:3001/authenticate?token=INVALID_TOKEN').catch(({ response }) => {
+        await axios.get('http://localhost:3001/authenticate/INVALID_TOKEN').catch(({ response }) => {
             expect(response.status).toBe(401);
             expect(response.data).toEqual({ ok: false, msg: 'Invalid token' });
         });
