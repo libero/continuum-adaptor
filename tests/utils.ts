@@ -26,7 +26,7 @@ export const login = async (): Promise<LoginReturnValue> => {
     );
 
     const res = await axios.get(`http://localhost:3001/authenticate?token=${mockJournalToken}`);
-    const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('#');
+    const [redirectUrl, returnedToken] = res.request.res.responseUrl.split('?token=');
     const decodedToken = verify(returnedToken, config.authentication_jwt_secret) as object;
 
     return { res, redirectUrl, decodedToken };

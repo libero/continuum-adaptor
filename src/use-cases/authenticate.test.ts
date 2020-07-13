@@ -120,7 +120,7 @@ describe('Authenticate Handler', () => {
 
             expect(responseMock.redirect).toHaveBeenCalledTimes(1);
             const firstArg = responseMock.redirect.mock.calls[0][0];
-            const [url, token] = firstArg.split('#');
+            const [url, token] = firstArg.split('?token=');
 
             expect(url).toBe(returnUrl);
 

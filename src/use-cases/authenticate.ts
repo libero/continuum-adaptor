@@ -42,7 +42,7 @@ export const Authenticate = (config: Config, userService: UserRepository) => asy
         } as LiberoAuthToken;
 
         const encodedPayload = encode(config.authentication_jwt_secret, payload, '30m');
-        return res.redirect(`${config.login_return_url}#${encodedPayload}`);
+        return res.redirect(`${config.login_return_url}?token=${encodedPayload}`);
     } catch (error) {
         return next(error);
     }
