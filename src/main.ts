@@ -7,7 +7,7 @@ import { InfraLogger as logger } from './logger';
 import { KnexUserRepository } from './repo/user';
 import { ProfilesService } from './repo/profiles';
 import { PeopleService } from './repo/people';
-import { HealthCheck, Authenticate, GetCurrentUser, GetEditors, GetPerson } from './use-cases';
+import { HealthCheck, Authenticate, GetCurrentUser, GetEditors, GetPerson, loginProxy } from './use-cases';
 import config from './config';
 
 const token = process.env.ELIFE_API_GATEWAY_SECRET || '';
@@ -33,8 +33,7 @@ const init = async (): Promise<http.Server> => {
     });
 
     app.get('/health', HealthCheck());
-    //part of #1123 staging fix. If this doesn't work, revert.
-    //app.get('/authenticate/:token?', Authenticate(config, userRepository));
+    app.get('/auth-login', loginProxy(config));
     app.get('/authenticate', Authenticate(config, userRepository));
     app.get('/current-user', GetCurrentUser(config, userRepository, profileService));
     app.get('/editors', GetEditors(config, peopleService));
