@@ -5,6 +5,7 @@ export * from './authenticate';
 export * from './getCurrentUser';
 export * from './getEditors';
 export * from './getPerson';
+export * from './loginProxy';
 
 export const HealthCheck = () => (_req: Request, res: Response): void => {
     logger.info('healthCheck');
