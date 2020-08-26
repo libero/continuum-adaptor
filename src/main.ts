@@ -53,12 +53,14 @@ const main = async (): Promise<void> => {
     const serverHandle = await init();
 
     process.on('SIGINT', () => {
+        logger.info('SIGINT called');
         serverHandle.close(() => {
             process.exit(0);
         });
     });
 
     process.on('SIGTERM', () => {
+        logger.info('SIGTERM called');
         serverHandle.close(() => {
             process.exit(0);
         });
