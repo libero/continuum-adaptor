@@ -3,6 +3,7 @@ import { Config as KnexConfig } from 'knex';
 export interface Config {
     port: number;
     login_url: string;
+    logout_url: string;
     login_return_url: string;
     authentication_jwt_secret: string;
     continuum_jwt_secret: string;
@@ -13,6 +14,7 @@ export interface Config {
 const appConfig: Config = {
     port: Number(process.env.PORT),
     login_url: process.env.LOGIN_URL || '',
+    logout_url: process.env.LOGOUT_URL || '',
     login_return_url: process.env.LOGIN_RETURN_URL || '',
     authentication_jwt_secret: process.env.AUTHENTICATION_JWT_SECRET || '',
     continuum_jwt_secret: process.env.CONTINUUM_JWT_SECRET || '',

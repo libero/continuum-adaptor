@@ -11,7 +11,7 @@ import { InfraLogger as logger } from './logger';
 import { KnexUserRepository } from './repo/user';
 import { ProfilesService } from './repo/profiles';
 import { PeopleService } from './repo/people';
-import { HealthCheck, Authenticate, GetCurrentUser, GetEditors, GetPerson, loginProxy } from './use-cases';
+import { HealthCheck, Authenticate, GetCurrentUser, GetEditors, GetPerson, loginProxy, logoutProxy } from './use-cases';
 import config from './config';
 
 const token = process.env.ELIFE_API_GATEWAY_SECRET || '';
@@ -19,6 +19,7 @@ const token = process.env.ELIFE_API_GATEWAY_SECRET || '';
 const init = async (): Promise<http.Server> => {
     logger.info(`Starting service on port ${config.port}`);
     logger.info(`config.login_url: ${config.login_url}`);
+    logger.info(`config.logout_url: ${config.logout_url}`);
     logger.info(`config.login_return_url: ${config.login_return_url}`);
     logger.info(`config.continuum_api_url: ${config.continuum_api_url}`);
 
@@ -38,6 +39,7 @@ const init = async (): Promise<http.Server> => {
 
     app.get('/health', HealthCheck());
     app.get('/auth-login', loginProxy(config));
+    app.get('/auth-logout', logoutProxy(config));
     app.get('/authenticate', Authenticate(config, userRepository));
     app.get('/current-user', GetCurrentUser(config, userRepository, profileService));
     app.get('/editors', GetEditors(config, peopleService));

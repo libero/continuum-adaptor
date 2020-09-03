@@ -6,6 +6,7 @@ export * from './getCurrentUser';
 export * from './getEditors';
 export * from './getPerson';
 export * from './loginProxy';
+export * from './logoutProxy';
 
 export const HealthCheck = () => (_req: Request, res: Response): void => {
     logger.info('healthCheck');
