@@ -16,6 +16,7 @@ jest.mock('fs', (): object => ({
 const config: Config = {
     port: 3000,
     login_url: 'login-url',
+    logout_url: 'logout-url',
     login_return_url: 'login-return',
     authentication_jwt_secret: 'ca-secret',
     continuum_jwt_secret: 'continuum-secret',
