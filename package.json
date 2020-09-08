@@ -25,7 +25,6 @@
     "author": "libero-npm@elifesciences.org",
     "license": "MIT",
     "dependencies": {
-        "@libero/auth-token": "^0.1.1",
         "@libero/migrator": "^0.1.0",
         "express": "^4.17.1",
         "funfix": "^7.0.1",
@@ -33,7 +32,7 @@
         "jsonwebtoken": "^8.5.1",
         "newrelic": "6.12.0",
         "node-fetch": "^2.6.0",
-        "pg": "^7.17.1",
+        "pg": "7.17.1",
         "pino": "^5.13.2",
         "uuid": "^3.3.3"
     },
@@ -49,8 +48,6 @@
         "@typescript-eslint/eslint-plugin": "^2.5.0",
         "@typescript-eslint/parser": "^2.5.0",
         "axios": "^0.19.0",
-        "dotenv": "^8.2.0",
-        "dotenv-cli": "^3.0.0",
         "eslint": "^6.6.0",
         "eslint-config-prettier": "^6.5.0",
         "eslint-plugin-prettier": "^3.1.1",
@@ -62,8 +59,7 @@
         "prettier": "^1.18.2",
         "ts-jest": "^24.1.0",
         "ts-node": "^8.3.0",
-        "typescript": "^3.7.2",
-        "wait-for-expect": "^3.0.1"
+        "typescript": "^3.7.2"
     },
     "engines": {
         "node": ">=12.15.0"
