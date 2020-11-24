@@ -8,24 +8,6 @@ Copy the example config file
 cp config/config.example.json config/config.json
 ```
 
-## Setup
-
-Create a database called 'continuum-adaptor', then run the migrations:
-
-```sh
-yarn migrate run
-```
-
-To rollback one migration:
-```sh
-yarn migrate rollback
-```
-
-Migration status
-```sh
-yarn migrate status
-```
-
 ## Overview
 
 **The purpose of this service is to implement an interface to connect the eLife journal to libero reviewer**
