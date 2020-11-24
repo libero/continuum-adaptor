@@ -33,8 +33,8 @@ describe('GetEditors', (): void => {
                     label: 'Author',
                 },
                 name: {
-                    preferred: 'Tamlyn Rhodes',
-                    index: 'Rhodes, Tamlyn',
+                    preferred: 'reviewer libero',
+                    index: 'libero, reviewer',
                 },
             });
         } finally {
