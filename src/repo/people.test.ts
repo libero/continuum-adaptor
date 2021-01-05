@@ -63,14 +63,11 @@ describe('people', () => {
                 token: 'secret-token',
             }).getPersonById('person-id1');
             expect(fetch).toHaveBeenCalledTimes(1);
-            // re-enable once token is being used again
-            // expect(fetch).toHaveBeenCalledWith('http://people_service_url/person-id1', {
-            //     headers: { Authorization: 'secret-token' },
-            // });
 
             expect(fetch).toHaveBeenCalledWith('http://people_service_url/person-id1', {
-                headers: {},
+                headers: { Authorization: 'secret-token' },
             });
+
             expect(profile.get().id).toEqual('secret-person-id1');
         });
     });

@@ -68,8 +68,6 @@ export class PeopleService implements PeopleRepository {
 
         if (this.token.length > 0) {
             args.headers['Authorization'] = `${this.token}`;
-            // remove delete once new token is generated for continuum-adaptor https://github.com/elifesciences/issues/issues/6349
-            delete args.headers['Authorization'];
         }
         return Option.of(
             await fetch(url, args)
