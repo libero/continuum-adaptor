@@ -37,7 +37,7 @@
     "devDependencies": {
         "@types/express": "^4.17.2",
         "@types/http-errors": "^1.6.3",
-        "@types/jest": "^24.0.23",
+        "@types/jest": "^26.0.20",
         "@types/jsonwebtoken": "^8.3.5",
         "@types/knex": "^0.16.1",
         "@types/node-fetch": "^2.5.3",
@@ -51,11 +51,11 @@
         "eslint-plugin-prettier": "^3.1.1",
         "flush-promises": "^1.0.2",
         "husky": "^3.0.9",
-        "jest": "^24.9.0",
+        "jest": "^26.6.3",
         "nodemon": "^2.0.6",
         "pino-pretty": "^3.3.0",
         "prettier": "^1.18.2",
-        "ts-jest": "^24.1.0",
+        "ts-jest": "^26.4.4",
         "ts-node": "^8.3.0",
         "typescript": "^3.7.2"
     },
